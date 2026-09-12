@@ -27,6 +27,24 @@ const escape = (value) =>
       ],
   );
 const md = (value) => DOMPurify.sanitize(marked.parse(value));
+// The codex seal: the outer rings are the void around every world, the eight
+// small crystals are the basic attributes, and the split crystal stacks the
+// celestial realm (open), the material realm (ember), and the demon realm (solid).
+const sealOrnaments = Array.from({ length: 8 }, (_, i) => {
+  const a = (i * Math.PI) / 4 - Math.PI / 2;
+  const [ux, uy] = [Math.cos(a), Math.sin(a)];
+  const [cx, cy] = [32 + 25.8 * ux, 32 + 25.8 * uy];
+  const p = (r, t) => `${(cx + r * ux - t * uy).toFixed(2)} ${(cy + r * uy + t * ux).toFixed(2)}`;
+  return `M${p(1.6, 0)}L${p(0, 1.1)}L${p(-1.6, 0)}L${p(0, -1.1)}Z`;
+}).join("");
+const sealMark = (className) => `<svg class="${className}" viewBox="0 0 64 64" aria-hidden="true">
+  <circle cx="32" cy="32" r="29.5" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="32" cy="32" r="23" fill="none" stroke="currentColor" stroke-width="1.25"/>
+  <path d="${sealOrnaments}" fill="currentColor"/>
+  <path d="M32 14.8 38.4 24.6H25.6Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M22.92 28h18.16L43.5 32l-2.42 4H22.92L20.5 32Z" fill="var(--orange)"/>
+  <path d="M24.43 38.5h15.14L32 51Z" fill="currentColor"/>
+</svg>`;
 const allSections = parts.flatMap((p) =>
   p.sections.map((s) => ({ ...s, part: p })),
 );
@@ -34,13 +52,13 @@ const articleLink = (p, s) => `#${p}${s ? "/" + s : ""}`;
 
 document.querySelector("#app").innerHTML = `
   <header class="site-nav">
-    <a class="brand" href="#home" aria-label="이그니아 코덱스 홈"><span>ignia<span class="brand-dot">.</span></span><small>이그니아 세계관</small></a>
+    <a class="brand" href="#home" aria-label="이그니아 코덱스 홈">${sealMark("brand-mark")}<span>ignia<span class="brand-dot">.</span></span><small>이그니아 세계관</small></a>
     <nav id="navigation" aria-label="설정집 탐색">
     ${parts.map((p, i) => `<a href="#${p.id}">${shortTitles[i]}</a>`).join("")}
     <span class="nav-divider" aria-hidden="true"></span><a href="#pending">미정 항목 <small>${pending.length}</small></a><a href="#original">원문 보기</a></nav>
-    <button class="theme-toggle" type="button" aria-label="다크 모드" aria-pressed="false"><svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg></button>
-    <button class="menu-toggle" type="button" aria-label="탐색 메뉴 열기" aria-controls="navigation" aria-expanded="false">☰</button>
-    <button class="search-trigger" type="button" aria-label="설정 검색"><span aria-hidden="true">⌕</span><span class="search-label">설정 검색</span><kbd>⌘ K</kbd></button>
+    <button class="theme-toggle" type="button" aria-label="다크 모드" aria-pressed="false"><svg class="nav-icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg><svg class="nav-icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg></button>
+    <button class="menu-toggle" type="button" aria-label="탐색 메뉴 열기" aria-controls="navigation" aria-expanded="false"><svg class="nav-icon icon-menu" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="nav-icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="search-trigger" type="button" aria-label="설정 검색"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span class="search-label">설정 검색</span><kbd>⌘ K</kbd></button>
   </header>
   <main id="main" tabindex="-1"></main><footer><span>Ignia Codex</span><span>아직 쓰고 있는 설정집이라 내용은 수시로 바뀐다</span><a href="#original">원문 보기</a></footer>
   <dialog id="search-dialog" aria-labelledby="search-title"><div class="search-head"><label for="search-input" id="search-title">설정 검색</label><button class="close-search" aria-label="검색 닫기">✕</button></div><input type="search" id="search-input" placeholder="국가·속성·종족 이름으로 검색" autocomplete="off"/><div id="search-results" aria-live="polite"></div><p class="search-hint">Esc 닫기</p></dialog>`;

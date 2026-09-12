@@ -47,7 +47,9 @@ GitHub Pages를 GitHub Actions 방식으로 설정한다. `main`에 푸시하면
 
 현재 홈 히어로 배경이 React Bits의 GradientWaves(`src/components/GradientWaves.jsx`, `ogl` 사용)다. 색과 속도는 `src/main.js`의 `mountHome`에서 조정한다. 동작 줄이기 설정에서는 속도·그레인·마우스 반응을 끄고, WebGL2가 없으면 CSS 그라디언트만 보인다. `@vitejs/plugin-react`는 현재 Vite 6과 맞는 4.x를 쓴다.
 
-서체는 Noto Sans KR로 통일한다. 히어로 아래에는 현재 무대 소개와 주제별 목록이 이어지며, 본문은 16px과 넉넉한 줄 간격을 사용한다. 장식적인 금빛·고서체·반복 카드 구성을 제거하고, 같은 탐색 구조와 검색·원문 다운로드 기능을 유지한다.
+서체는 Noto Sans KR로 통일한다. 본문은 16px과 넉넉한 줄 간격을 사용한다.
+
+홈의 히어로 아래 섹션은 히어로의 언어를 이어받는다. 큰 패널은 모두 28px 둥근 모서리이고, 버튼은 `.btn` 한 벌(`btn-light` 어두운 면의 흰 버튼, `btn-glass` 유리 버튼, `btn-solid` 밝은 면의 짙은 버튼, `btn-ghost` 테두리 버튼)을 쓴다. 현재 무대 카드는 콘셉트 아트 위에 남보라를 겹친 어두운 카드, 세계 구조는 외곽세계를 뜻하는 남보라 패널로 원문 도식처럼 외곽세계 점선 사이에 천계·물질계·마계 층을 놓는다. 섹션 제목 위의 작은 라벨은 쓰지 않는다. 설정 본문 페이지의 도식은 홈과 별개로 기존 모양을 유지한다. 장식적인 금빛·고서체·반복 카드 구성을 제거하고, 같은 탐색 구조와 검색·원문 다운로드 기능을 유지한다.
 
 참고: https://color.adobe.com/explore · https://color.adobe.com/create/color-wheel
 

@@ -52,7 +52,7 @@ const articleLink = (p, s) => `#${p}${s ? "/" + s : ""}`;
 
 document.querySelector("#app").innerHTML = `
   <header class="site-nav">
-    <a class="brand" href="#home" aria-label="이그니아 코덱스 홈">${sealMark("brand-mark")}<span>ignia<span class="brand-dot">.</span></span><small>이그니아 세계관</small></a>
+    <a class="brand" href="#home" aria-label="이그니아 코덱스 홈">${sealMark("brand-mark")}<span>ignia<span class="brand-dot">.</span></span></a>
     <nav id="navigation" aria-label="설정집 탐색">
     ${parts.map((p, i) => `<a href="#${p.id}">${shortTitles[i]}</a>`).join("")}
     <span class="nav-divider" aria-hidden="true"></span><a href="#pending">미정 항목 <small>${pending.length}</small></a><a href="#original">원문 보기</a></nav>
@@ -60,7 +60,7 @@ document.querySelector("#app").innerHTML = `
     <button class="menu-toggle" type="button" aria-label="탐색 메뉴 열기" aria-controls="navigation" aria-expanded="false"><svg class="nav-icon icon-menu" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="nav-icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <button class="search-trigger" type="button" aria-label="설정 검색"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span class="search-label">설정 검색</span><kbd>⌘ K</kbd></button>
   </header>
-  <main id="main" tabindex="-1"></main><footer><span>Ignia Codex</span><span>아직 쓰고 있는 설정집이라 내용은 수시로 바뀐다</span><a href="#original">원문 보기</a></footer>
+  <main id="main" tabindex="-1"></main><footer>${sealMark("footer-mark")}<span>Ignia Codex</span><span>아직 쓰고 있는 설정집이라 내용은 수시로 바뀐다</span><a href="#original">원문 보기</a></footer>
   <dialog id="search-dialog" aria-labelledby="search-title"><div class="search-head"><label for="search-input" id="search-title">설정 검색</label><button class="close-search" aria-label="검색 닫기">✕</button></div><input type="search" id="search-input" placeholder="국가·속성·종족 이름으로 검색" autocomplete="off"/><div id="search-results" aria-live="polite"></div><p class="search-hint">Esc 닫기</p></dialog>`;
 
 const main = document.querySelector("#main");
@@ -85,12 +85,22 @@ function elementsDiagram() {
 }
 
 function home() {
-  return `<section class="hero"><div class="hero-waves" aria-hidden="true"></div><div class="hero-content"><p class="hero-badge"><span>집필 중</span>현재 시점 대륙력 800년대</p><h1>이그니아 코덱스</h1><p class="hero-lede">과거·현재·미래 세계의 모든 지식이 담긴 제 4의 도서관</p><div class="hero-actions"><a class="hero-primary" href="#part-1/part-1-s1">처음부터 읽기</a><a class="hero-secondary" href="#pending">미정 항목 보기</a></div></div></section>
-  <div class="home-body"><div class="explore-layout"><section class="world-feature"><div class="feature-copy"><span class="feature-label">현재 무대</span><h2>이그나르 대륙<br>대륙력 800년대</h2><p>왕국과 제국은 국경에서 대치 중이고 마계 접경의 게이트는 점점 불안정해진다</p><a class="primary-link" href="#part-2">지리와 국가 보기 <span aria-hidden="true">↗</span></a></div><div class="hero-art" role="img" aria-label="천계·물질계·심연을 표현한 이그니아 콘셉트 아트"></div><span class="art-caption">콘셉트 아트 · 실제 지형과 다를 수 있음</span></section>
-  <section class="volumes"><div class="section-heading"><h2>목차</h2><span>제1~${parts.length}부</span></div><div class="volume-grid">${parts.map((p, i) => `<a class="volume" href="#${p.id}"><span class="volume-number">0${i + 1}</span><div><h3>${shortTitles[i]}</h3><p>${descriptions[i]}</p></div><span class="volume-arrow" aria-hidden="true">↗</span></a>`).join("")}</div></section></div>
-  <section class="world-overview"><div class="realm-copy"><span class="section-kicker">세계 구조</span><h2>위에서부터 <br>천계·물질계·마계</h2><p>이그니아는 여러 세계가 층층이 포개진 다집합 구축형 세계다<br>허무 에너지만 있는 외곽세계를 사이에 두고 세 세계가 차례로 놓여 있고 그 중심은 물질계다</p><a class="text-link" href="#part-1/part-1-s1">세계 간 이동 ↗</a></div>${realmDiagram()}</section>
-  <section class="attribute-preview"><div class="section-heading"><div><span class="section-kicker">속성</span><h2>기본 속성 8종과 상위 마법</h2></div><a href="#part-1/part-1-s3">융합·특수 속성 ↗</a></div>${elementsDiagram()}</section>
-  <section class="unfinished"><div><span class="section-kicker">미정</span><h2>아직 정하지 않은 것들</h2><p>국가 정식 명칭·창세 가설·주사위 판정 여부처럼 원문에 🚧로 남겨 둔 항목</p></div><a href="#pending">미정 항목 보기 ↗</a></section></div>`;
+  return `<section class="hero"><div class="hero-waves" aria-hidden="true"></div><div class="hero-content"><p class="hero-badge"><span>집필 중</span>현재 시점 대륙력 800년대</p><h1>이그니아 코덱스</h1><p class="hero-lede">과거·현재·미래 세계의 모든 지식이 담긴 제 4의 도서관</p><div class="hero-actions"><a class="btn btn-light" href="#part-1/part-1-s1">처음부터 읽기</a><a class="btn btn-glass" href="#pending">미정 항목 보기</a></div></div></section>
+  <div class="home-body">
+    <div class="home-lead">
+      <section class="stage-card"><div class="stage-art" role="img" aria-label="천계·물질계·심연을 표현한 이그니아 콘셉트 아트"></div><small class="stage-note">콘셉트 아트라 실제 지형과 다를 수 있음</small><p class="glass-badge"><span>현재 무대</span>대륙력 800년대</p><h2>이그나르 대륙</h2><p class="stage-lede">왕국과 제국은 국경에서 대치 중이고 마계 접경의 게이트는 점점 불안정해진다</p><a class="btn btn-light" href="#part-2">지리와 국가 보기</a></section>
+      <section class="codex-index" aria-labelledby="codex-index-title"><h2 id="codex-index-title">목차</h2><ol>${parts.map((p, i) => `<li><a href="#${p.id}"><span class="index-part">제${i + 1}부</span><span class="index-title">${shortTitles[i]}</span><span class="index-desc">${descriptions[i]}</span><svg class="index-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>`).join("")}</ol></section>
+    </div>
+    <section class="void-panel"><div class="void-copy"><h2>위에서부터 <br>천계·물질계·마계</h2><p>이그니아는 여러 세계가 층층이 포개진 다집합 구축형 세계다<br>허무 에너지만 있는 외곽세계를 사이에 두고 세 세계가 차례로 놓여 있고 그 중심은 물질계다</p><a class="btn btn-glass" href="#part-1/part-1-s1">세계 간 이동 읽기</a></div>${strataDiagram()}</section>
+    <section class="attr-section"><div class="home-heading"><h2>기본 속성 8종과 상위 마법</h2><a class="btn btn-ghost" href="#part-1/part-1-s3">융합·특수 속성 보기</a></div>${elementsDiagram()}</section>
+    <section class="pending-strip"><div><h2>아직 정하지 않은 것들</h2><p>국가 정식 명칭·창세 가설·주사위 판정 여부처럼 원문에 🚧로 남겨 둔 항목</p></div><a class="btn btn-solid" href="#pending">미정 항목 ${pending.length}개 보기</a></section>
+  </div>`;
+}
+
+// Mirrors the source document's diagram, where a band of the void separates each world.
+function strataDiagram() {
+  const gap = '<span class="strata-gap">외곽세계</span>';
+  return `<div class="strata-wrap"><div class="strata" role="img" aria-label="외곽세계를 사이에 두고 천계·물질계·마계가 차례로 놓인 계층 구조">${gap}<div class="stratum celestial"><strong>천계</strong><small>Celestial Realm</small></div>${gap}<div class="stratum material"><strong>물질계</strong><em>중심 세계</em><small>Material Realm</small></div>${gap}<div class="stratum abyss"><strong>마계</strong><small>Demon Realm</small></div>${gap}</div><p class="strata-note">세계 간 진입은 일반적으로 편도이다</p></div>`;
 }
 
 function nationDiagram() {

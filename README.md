@@ -25,6 +25,8 @@ GitHub Pages를 GitHub Actions 방식으로 설정한다. `main`에 푸시하면
 
 현대적인 탐색 화면과 한국어 본문 가독성을 중심으로 구성한다. 배경 `#F6F7FA`, 본문 `#252735`, 코발트 블루 `#3454D1`, 라일락 `#E5E0FF`, 오렌지 `#FF7947`을 사용한다. Adobe Color의 색상 탐색과 색상 조화 원칙을 참고해 직접 구성한 조합이며, 특정 트렌드 팔레트의 복제본은 아니다.
 
+홈 첫 화면의 제목 영역 배경에는 React Bits의 GradientWaves를 React 없이 옮긴 WebGL 파도 효과(`src/gradientWaves.js`, `ogl` 사용)를 깐다. 색과 움직임은 `src/main.js`의 `mountHomeWaves`에서 조정한다. 동작 줄이기 설정에서는 정지 화면 한 장만 그리고, WebGL2가 없으면 CSS 그라디언트만 보인다.
+
 서체는 Noto Sans KR로 통일한다. 첫 화면은 소개 이미지와 주제별 목록으로 구성하며, 본문은 16px과 넉넉한 줄 간격을 사용한다. 장식적인 금빛·고서체·반복 카드 구성을 제거하고, 같은 탐색 구조와 검색·원문 다운로드 기능을 유지한다.
 
 참고: https://color.adobe.com/explore · https://color.adobe.com/create/color-wheel

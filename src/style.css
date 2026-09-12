@@ -238,11 +238,26 @@ main {
   min-height: calc(100vh - 170px);
 }
 .home-intro {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 25px;
+  min-height: 300px;
+  padding: 36px 40px;
   margin-bottom: 35px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fbfbfe 0%, #eeebff 55%, #c9c6f4 100%);
+}
+.home-waves {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.home-intro > p {
+  max-width: 290px;
 }
 .section-kicker {
   display: block;
@@ -1276,7 +1291,10 @@ dialog::backdrop {
     font-size: 12px;
   }
   .home-intro {
+    min-height: 270px;
+    padding: 28px 24px;
     margin-bottom: 25px;
+    border-radius: 12px;
   }
   .home-intro h1 {
     font-size: 29px;

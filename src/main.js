@@ -35,17 +35,17 @@ const articleLink = (p, s) => `#${p}${s ? "/" + s : ""}`;
 
 document.querySelector("#app").innerHTML = `
   <aside class="sidebar" id="navigation" aria-label="설정집 탐색">
-    <a class="brand" href="#home"><span class="brand-seal" aria-hidden="true">Ⅰ</span><span>IGNIA<small>이그니아 통합 코덱스</small></span></a>
-    <button class="search-trigger" type="button"><span aria-hidden="true">⌕</span> 기록 검색 <kbd>⌘ K</kbd></button>
-    <nav><a class="nav-home" href="#home"><span aria-hidden="true">▦</span> 세계의 기록</a><p class="nav-label">설정집</p>
+    <a class="brand" href="#home"><span>ignia<span class="brand-dot">.</span><small>이그니아 세계관</small></span></a>
+    <button class="search-trigger" type="button"><span aria-hidden="true">⌕</span> 설정 검색 <kbd>⌘ K</kbd></button>
+    <nav><a class="nav-home" href="#home"><span aria-hidden="true">▦</span> 세계관 둘러보기</a><p class="nav-label">설정집</p>
     ${parts.map((p, i) => `<a class="nav-part" href="#${p.id}"><span aria-hidden="true">${symbols[i]}</span>${shortTitles[i]}<small>0${i + 1}</small></a>`).join("")}
-    <div class="nav-divider"></div><a href="#pending" class="nav-pending"><span aria-hidden="true">◌</span> 미완성 기록 <small>${pending.length}</small></a>
+    <div class="nav-divider"></div><a href="#pending" class="nav-pending"><span aria-hidden="true">◌</span> 미완성 설정 <small>${pending.length}</small></a>
     <a href="#original"><span aria-hidden="true">≡</span> 원문 읽기</a></nav>
-    <div class="sidebar-bottom"><span class="book-mark" aria-hidden="true">✧</span><p>아직 쓰이지 않은 이야기,<br>그 또한 이 세계의 일부.</p><span class="edition">진행 중인 세계관 · 초안</span></div>
+    <div class="sidebar-bottom"><p>세계는 계속 확장 중.<br>새로운 설정을 함께 만들어간다.</p><span class="edition">진행 중인 세계관 · 초안</span></div>
   </aside>
-  <div class="workspace"><header class="topbar"><button class="mobile-menu" aria-label="탐색 메뉴 열기" aria-controls="navigation" aria-expanded="false">☰</button><div class="breadcrumb">이그니아 코덱스 <span>/</span> <span id="crumb">세계의 기록</span></div><div class="top-actions"><span class="draft-pill">집필 중</span><button class="icon-search" aria-label="기록 검색">⌕</button></div></header>
-  <main id="main" tabindex="-1"></main><footer><span>Ignia Codex</span><span>계속해서 확장되는 세계의 기록</span><a href="#original">원문 보기</a></footer></div>
-  <dialog id="search-dialog" aria-labelledby="search-title"><div class="search-head"><label for="search-input" id="search-title">기록 검색</label><button class="close-search" aria-label="검색 닫기">✕</button></div><input type="search" id="search-input" placeholder="국가, 마력, 종족… 무엇을 찾고 있나요?" autocomplete="off"/><div id="search-results" aria-live="polite"></div><p class="search-hint">Esc 닫기 · 검색 결과를 선택해 해당 기록으로 이동</p></dialog>`;
+  <div class="workspace"><header class="topbar"><button class="mobile-menu" aria-label="탐색 메뉴 열기" aria-controls="navigation" aria-expanded="false">☰</button><div class="breadcrumb">이그니아 코덱스 <span>/</span> <span id="crumb">세계관 둘러보기</span></div><div class="top-actions"><span class="draft-pill">집필 중</span><button class="icon-search" aria-label="설정 검색">⌕</button></div></header>
+  <main id="main" tabindex="-1"></main><footer><span>Ignia Codex</span><span>계속해서 확장되는 세계관</span><a href="#original">원문 보기</a></footer></div>
+  <dialog id="search-dialog" aria-labelledby="search-title"><div class="search-head"><label for="search-input" id="search-title">설정 검색</label><button class="close-search" aria-label="검색 닫기">✕</button></div><input type="search" id="search-input" placeholder="국가, 마력, 종족… 무엇을 찾고 있나요?" autocomplete="off"/><div id="search-results" aria-live="polite"></div><p class="search-hint">Esc 닫기 · 검색 결과를 선택해 해당 기록으로 이동</p></dialog>`;
 
 const main = document.querySelector("#main");
 
@@ -56,24 +56,25 @@ function realmDiagram() {
 function elementsDiagram() {
   const rows = getTable(parts[0].sections[2].body, "### 3-2.");
   const colors = [
-    "#d88f73",
-    "#8bbdce",
-    "#a5b79a",
-    "#bda487",
-    "#b4a3d2",
-    "#d7c389",
-    "#929dbc",
-    "#a7b0b5",
+    "#a53d20",
+    "#245f9f",
+    "#326347",
+    "#79532f",
+    "#6942a8",
+    "#806314",
+    "#494d83",
+    "#505865",
   ];
   return `<div class="element-grid">${rows.map((r, i) => `<div class="element" style="--element:${colors[i]}"><span class="element-glyph" aria-hidden="true">${["火", "水", "風", "土", "雷", "光", "暗", "無"][i]}</span><span>${escape(cleanText(r[0]).replace(" 마법", ""))}</span><span class="evolution-line" aria-hidden="true">↓</span><strong>${escape(cleanText(r[1]).split(" — ")[0])}</strong></div>`).join("")}</div><p class="diagram-caption">속성을 단련하면 상위 마법으로 진화한다. 무(無)는 진화하지 않는다.</p>`;
 }
 
 function home() {
-  return `<section class="hero"><div class="hero-art" role="img" aria-label="구름 위 천계와 산맥, 심연을 표현한 이그니아 세계관 콘셉트 아트"></div><div class="hero-content"><div class="hero-kicker"><span></span> 세계를 펼치다</div><h1>이그니아<span>세계의 기록</span></h1><p>포개진 세계, 서로 다른 힘과 신념.<br>아직 끝나지 않은 세계의 이야기를 펼친다.</p><a class="primary-link" href="#part-1/part-1-s1">세계 구조 읽기 <span aria-hidden="true">↗</span></a></div><div class="hero-caption"><span>IGNIA</span><small>세계관 콘셉트 아트 · 지리 확정안 아님</small></div></section>
-  <section class="volumes"><div class="section-heading"><h2>네 권의 기록</h2><span>이그니아를 이루는 이야기</span></div><div class="volume-grid">${parts.map((p, i) => `<a class="volume" href="#${p.id}"><div class="volume-top"><span class="volume-symbol" aria-hidden="true">${symbols[i]}</span><span>제${i + 1}부</span></div><h3>${shortTitles[i]}</h3><p>${descriptions[i]}</p><div class="volume-bottom"><span>${p.sections.length}개 항목</span><span aria-hidden="true">↗</span></div></a>`).join("")}</div></section>
-  <section class="world-overview"><div class="realm-copy"><span class="section-kicker">세계 구조</span><h2>하나의 세계,<br>겹쳐진 세 개의 영역.</h2><p>이그니아는 여러 세계가 계층 형태로 포개진 다집합 구축형 세계다. 허무로 가득한 외곽세계 안에 천계, 물질계, 마계가 놓여 있다.</p><a class="text-link" href="#part-1/part-1-s1">세계의 법칙 읽기 <span aria-hidden="true">↗</span></a></div>${realmDiagram()}</section>
-  <section class="attribute-preview"><div class="section-heading"><h2>마력을 이루는 여덟 속성</h2><a href="#part-1/part-1-s3">속성 기록 보기 ↗</a></div>${elementsDiagram()}</section>
-  <section class="unfinished"><span class="unfinished-icon" aria-hidden="true">✎</span><div><h2>세계는 아직 완성되지 않았다.</h2><p>국가의 이름, 창세의 비밀, 모험의 규칙. 남겨진 여백을 함께 채워간다.</p></div><a href="#pending">미완성 기록 보기 <span aria-hidden="true">↗</span></a></section>`;
+  return `<section class="home-intro"><div><span class="section-kicker">이그니아 · 판타지 세계관</span><h1>서로 다른 세계.<br>끝없이 이어지는 이야기.</h1></div><p>세계의 구조와 마력의 법칙부터<br>대륙의 국가, 역사, 모험의 규칙까지.</p></section>
+  <div class="explore-layout"><section class="world-feature"><div class="feature-copy"><span class="feature-label">세계 구조</span><h2>이그니아는<br>어떤 세계일까?</h2><p>천계, 물질계, 마계.<br>세 개의 영역에서 시작되는 세계.</p><a class="primary-link" href="#part-1/part-1-s1">세계 구조 알아보기 <span aria-hidden="true">↗</span></a></div><div class="hero-art" role="img" aria-label="천계와 물질계, 심연을 표현한 이그니아 콘셉트 아트"></div><span class="art-caption">세계관 콘셉트 아트 · 지리 확정안 아님</span></section>
+  <section class="volumes"><div class="section-heading"><h2>어디부터 살펴볼까?</h2><span>4개의 주제</span></div><div class="volume-grid">${parts.map((p, i) => `<a class="volume" href="#${p.id}"><span class="volume-number">0${i + 1}</span><div><h3>${shortTitles[i]}</h3><p>${descriptions[i]}</p></div><span class="volume-arrow" aria-hidden="true">↗</span></a>`).join("")}</div></section></div>
+  <section class="world-overview"><div class="realm-copy"><span class="section-kicker">세계 구조 한눈에 보기</span><h2>세 개의 영역,<br>그 사이의 외곽세계.</h2><p>여러 세계가 계층 형태로 포개진 다집합 구축형 세계. 허무 에너지로 가득한 외곽세계 안에 천계, 물질계, 마계가 놓여 있다.</p><a class="text-link" href="#part-1/part-1-s1">세계 간 이동 방식 읽기 ↗</a></div>${realmDiagram()}</section>
+  <section class="attribute-preview"><div class="section-heading"><div><span class="section-kicker">마력과 속성</span><h2>여덟 속성에서 시작되는 힘.</h2></div><a href="#part-1/part-1-s3">속성 전체 보기 ↗</a></div>${elementsDiagram()}</section>
+  <section class="unfinished"><div><span class="section-kicker">함께 정할 설정</span><h2>아직 열려 있는 가능성.</h2><p>국가의 이름부터 창세와 모험의 규칙까지, 다음에 채워갈 설정을 모았다.</p></div><a href="#pending">미완성 설정 보기 ↗</a></section>`;
 }
 
 function nationDiagram() {
@@ -115,26 +116,26 @@ function article(part, section) {
   let content;
   if (section) content = `<article class="prose">${md(section.body)}</article>`;
   else
-    content = `<div class="prose part-intro">${md(part.intro)}</div>${part.sections.map((s) => `<section class="chapter" id="${s.id}"><h2><a href="${articleLink(part.id, s.id)}">${escape(s.title)} <span aria-hidden="true">↗</span></a></h2>${part.id === 'part-3' && s.title === '연표' ? historyDiagram() : `<div class="prose">${md(s.body)}</div>`}</section>`).join("")}`;
+    content = `<div class="prose part-intro">${md(part.intro)}</div>${part.sections.map((s) => `<section class="chapter" id="${s.id}"><h2><a href="${articleLink(part.id, s.id)}">${escape(s.title)} <span aria-hidden="true">↗</span></a></h2>${part.id === "part-3" && s.title === "연표" ? historyDiagram() : `<div class="prose">${md(s.body)}</div>`}</section>`).join("")}`;
   if (part.id === "part-3" && section?.title === "연표") content = "";
-  return `<div class="reading-header"><span class="section-kicker">제${index + 1}부 · ${shortTitles[index]}</span><h1>${escape(section ? section.title.replace(/^\d+\. /, "") : shortTitles[index])}</h1><p>${descriptions[index]}</p></div><div class="reader-grid"><div class="reader-body">${visualFor(part, section)}${content}<div class="reading-end"><a href="#${part.id}">제${index + 1}부 전체 읽기</a><a href="#home">세계의 기록으로</a></div></div><aside class="toc" aria-label="이 부의 목차"><span>이 부의 기록</span>${part.sections.map((s) => `<a ${s === section ? 'aria-current="page"' : ""} href="${articleLink(part.id, s.id)}">${escape(s.title.replace(/ \(.+\)/, ""))}</a>`).join("")}<div class="toc-note">미정 항목은 원문의<br>🚧 표기를 유지한다.</div></aside></div>`;
+  return `<div class="reading-header"><span class="section-kicker">제${index + 1}부 · ${shortTitles[index]}</span><h1>${escape(section ? section.title.replace(/^\d+\. /, "") : shortTitles[index])}</h1><p>${descriptions[index]}</p></div><div class="reader-grid"><div class="reader-body">${visualFor(part, section)}${content}<div class="reading-end"><a href="#${part.id}">제${index + 1}부 전체 읽기</a><a href="#home">세계관 둘러보기으로</a></div></div><aside class="toc" aria-label="이 부의 목차"><span>이 부의 목차</span>${part.sections.map((s) => `<a ${s === section ? 'aria-current="page"' : ""} href="${articleLink(part.id, s.id)}">${escape(s.title.replace(/ \(.+\)/, ""))}</a>`).join("")}<div class="toc-note">미정 항목은 원문의<br>🚧 표기를 유지한다.</div></aside></div>`;
 }
 
 function pendingPage() {
-  return `<div class="reading-header"><span class="section-kicker">함께 채울 여백</span><h1>미완성 기록</h1><p>아직 정해지지 않은 설정과 검토가 필요한 항목을 원문에서 모았다.</p></div><div class="pending-list">${pending.map(({ part, section, lines }) => `<article><div class="pending-meta"><span>${escape(part.title)}</span><span class="draft-pill">검토 중</span></div><h2><a href="${articleLink(part.id, section.id)}">${escape(section.title)} ↗</a></h2><div class="prose">${md(lines.join("\n\n"))}</div></article>`).join("")}</div><div class="info-panel"><h2>이름은 아직 가칭이다.</h2><p>제2부의 국가명 후보는 원문에 보존되어 있다. 이름을 확정하기 전까지 첫 번째 후보를 임시 표기명으로 사용한다.</p><a class="text-link" href="#part-2">국가별 명칭 후보 읽기 ↗</a></div>`;
+  return `<div class="reading-header"><span class="section-kicker">함께 채울 여백</span><h1>미완성 설정</h1><p>아직 정해지지 않은 설정과 검토가 필요한 항목을 원문에서 모았다.</p></div><div class="pending-list">${pending.map(({ part, section, lines }) => `<article><div class="pending-meta"><span>${escape(part.title)}</span><span class="draft-pill">검토 중</span></div><h2><a href="${articleLink(part.id, section.id)}">${escape(section.title)} ↗</a></h2><div class="prose">${md(lines.join("\n\n"))}</div></article>`).join("")}</div><div class="info-panel"><h2>이름은 아직 가칭이다.</h2><p>제2부의 국가명 후보는 원문에 보존되어 있다. 이름을 확정하기 전까지 첫 번째 후보를 임시 표기명으로 사용한다.</p><a class="text-link" href="#part-2">국가별 명칭 후보 읽기 ↗</a></div>`;
 }
 
 function render() {
   const [route = "home", sectionId] = location.hash.slice(1).split("/");
   const part = parts.find((p) => p.id === route);
   const section = part?.sections.find((s) => s.id === sectionId);
-  let label = "세계의 기록";
+  let label = "세계관 둘러보기";
   if (part) {
     main.innerHTML = article(part, section);
     label = shortTitles[parts.indexOf(part)];
   } else if (route === "pending") {
     main.innerHTML = pendingPage();
-    label = "미완성 기록";
+    label = "미완성 설정";
   } else if (route === "original") {
     main.innerHTML = `<div class="reading-header"><span class="section-kicker">원본 문서</span><h1>이그니아 통합 코덱스</h1><p>협업 브리핑을 포함한 설정집 전체 원문이다.</p><button id="download-md" class="primary-link">MD 내려받기 ↓</button></div><article class="prose original">${md(raw)}</article>`;
     label = "원문 읽기";
@@ -185,7 +186,7 @@ function results() {
       )
     : allSections.slice(0, 5);
   document.querySelector("#search-results").innerHTML =
-    `<p class="result-count">${query ? `${items.length}개의 기록` : "기록 둘러보기"}</p>` +
+    `<p class="result-count">${query ? `${items.length}개의 항목` : "설정 둘러보기"}</p>` +
     (items.length
       ? items
           .map((s) => {
@@ -195,7 +196,7 @@ function results() {
             return `<a class="search-result" href="${articleLink(s.part.id, s.id)}"><small>${escape(s.part.title)}</small><strong>${escape(s.title)}</strong><p>${start ? "…" : ""}${escape(text.slice(start, start + 130))}…</p></a>`;
           })
           .join("")
-      : '<div class="no-results">일치하는 기록이 없다.<br>더 짧은 단어나 다른 이름으로 검색해 보자.</div>');
+      : '<div class="no-results">일치하는 설정이 없다.<br>더 짧은 단어나 다른 이름으로 검색해 보자.</div>');
 }
 function openSearch() {
   dialog.showModal();

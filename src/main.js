@@ -2,7 +2,6 @@ import { marked } from "marked";
 import DOMPurify from "dompurify";
 import raw from "../이그니아_통합문서.md?raw";
 import { parseCodex, getPending, getTable, cleanText } from "./content.js";
-import { createGradientWaves } from "./gradientWaves.js";
 import "./style.css";
 
 const parts = parseCodex(raw);
@@ -46,7 +45,6 @@ document.querySelector("#app").innerHTML = `
   <dialog id="search-dialog" aria-labelledby="search-title"><div class="search-head"><label for="search-input" id="search-title">설정 검색</label><button class="close-search" aria-label="검색 닫기">✕</button></div><input type="search" id="search-input" placeholder="국가·속성·종족 이름으로 검색" autocomplete="off"/><div id="search-results" aria-live="polite"></div><p class="search-hint">Esc 닫기</p></dialog>`;
 
 const main = document.querySelector("#main");
-const siteNav = document.querySelector(".site-nav");
 
 function realmDiagram() {
   return `<div class="realm-diagram" aria-label="외곽세계 안에 천계·물질계·마계가 차례로 놓인 계층 구조"><span class="outer-world">외곽세계 <small>허무 에너지</small></span><div class="realm celestial"><span>천계</span><small>Celestial Realm</small></div><div class="realm material"><span>물질계</span><small>Material Realm</small><em>중심 세계</em></div><div class="realm abyss"><span>마계</span><small>Demon Realm</small></div><div class="realm-note">세계 간 진입은 일반적으로 편도이다</div></div>`;
@@ -125,29 +123,30 @@ function pendingPage() {
 }
 
 let unmountHome = null;
+// React and the effect load as a separate chunk so the page text shows first.
 function mountHome() {
-  const hero = main.querySelector(".hero");
+  const container = main.querySelector(".hero-waves");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const stopWaves = createGradientWaves(hero.querySelector(".hero-waves"), {
-    horizonColor: "#3B2F9E",
-    waveColor: "#6D5CE8",
-    crestColor: "#E5E0FF",
-    speed: 0.35,
-    fogDepth: 20,
-    maxDpr: 1.5,
-    pointerTarget: hero,
-    stillTime: reduceMotion ? 12 : null,
+  let unmount = null;
+  let cancelled = false;
+  Promise.all([
+    import("./islands.jsx"),
+    import("./components/GradientWaves.jsx"),
+  ]).then(([{ mountIsland }, { default: GradientWaves }]) => {
+    if (cancelled) return;
+    unmount = mountIsland(container, GradientWaves, {
+      horizonColor: "#3B2F9E",
+      waveColor: "#6D5CE8",
+      crestColor: "#E5E0FF",
+      speed: reduceMotion ? 0 : 0.35,
+      fogDepth: 20,
+      grain: !reduceMotion,
+      mouseInteraction: !reduceMotion,
+    });
   });
-  // The nav switches to dark glass while it floats over the hero.
-  const navObserver = new IntersectionObserver(
-    ([entry]) => siteNav.classList.toggle("on-void", entry.isIntersecting),
-    { rootMargin: `-${siteNav.getBoundingClientRect().bottom}px 0px 0px 0px` },
-  );
-  navObserver.observe(hero);
   return () => {
-    stopWaves?.();
-    navObserver.disconnect();
-    siteNav.classList.remove("on-void");
+    cancelled = true;
+    unmount?.();
   };
 }
 

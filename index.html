@@ -10,6 +10,17 @@
     />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <title>이그니아 코덱스</title>
+    <script>
+      (function () {
+        var theme = null;
+        try {
+          theme = localStorage.getItem("ignia-theme");
+        } catch (e) {}
+        if (theme !== "dark" && theme !== "light")
+          theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

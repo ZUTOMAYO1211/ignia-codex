@@ -38,6 +38,7 @@ document.querySelector("#app").innerHTML = `
     <nav id="navigation" aria-label="설정집 탐색">
     ${parts.map((p, i) => `<a href="#${p.id}">${shortTitles[i]}</a>`).join("")}
     <span class="nav-divider" aria-hidden="true"></span><a href="#pending">미정 항목 <small>${pending.length}</small></a><a href="#original">원문 보기</a></nav>
+    <button class="theme-toggle" type="button" aria-label="다크 모드" aria-pressed="false"><svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg></button>
     <button class="menu-toggle" type="button" aria-label="탐색 메뉴 열기" aria-controls="navigation" aria-expanded="false">☰</button>
     <button class="search-trigger" type="button" aria-label="설정 검색"><span aria-hidden="true">⌕</span><span class="search-label">설정 검색</span><kbd>⌘ K</kbd></button>
   </header>
@@ -268,6 +269,33 @@ document.addEventListener("click", (e) => {
     !e.target.closest(".site-nav")
   )
     closeMenu();
+});
+// index.html sets data-theme before first paint; this keeps the toggle in sync.
+const themeToggle = document.querySelector(".theme-toggle");
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+const systemDark = matchMedia("(prefers-color-scheme: dark)");
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  themeToggle.setAttribute("aria-pressed", String(theme === "dark"));
+  themeMeta.content = theme === "dark" ? "#14172b" : "#f6f7fa";
+}
+function savedTheme() {
+  try {
+    return localStorage.getItem("ignia-theme");
+  } catch {
+    return null;
+  }
+}
+applyTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+themeToggle.onclick = () => {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  try {
+    localStorage.setItem("ignia-theme", next);
+  } catch {}
+  applyTheme(next);
+};
+systemDark.addEventListener("change", (e) => {
+  if (!savedTheme()) applyTheme(e.matches ? "dark" : "light");
 });
 window.addEventListener("hashchange", () => {
   render();

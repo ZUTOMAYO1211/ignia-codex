@@ -1,11 +1,36 @@
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import raw from "../이그니아_통합문서.md?raw";
-import { parseCodex, getPending, getTable, cleanText } from "./content.js";
+import {
+  parseCodex,
+  getPending,
+  getTable,
+  cleanText,
+  getMagicSystem,
+  getAttributes,
+  getGrades,
+  getNations,
+  getEras,
+  getTurnRules,
+  getCodexStats,
+} from "./content.js";
+import { mountIslands } from "./islandManager.js";
+import { topic } from "./visuals/palette.js";
 import "./style.css";
 
 const parts = parseCodex(raw);
 const pending = getPending(parts);
+// Everything the visual islands draw is read from the source document.
+const codex = {
+  magic: getMagicSystem(parts),
+  attributes: getAttributes(parts),
+  grades: getGrades(parts),
+  nations: getNations(parts),
+  eras: getEras(parts),
+  turn: getTurnRules(parts),
+  stats: getCodexStats(parts),
+};
+const heroLede = "과거·현재·미래 세계의 모든 지식이 담긴 제 4의 도서관";
 const descriptions = [
   "세계 구조·마력 체계·속성·권능·종족·직업·장비",
   "이그나르 대륙의 지형·국가·세력 관계·게이트",
@@ -65,10 +90,6 @@ document.querySelector("#app").innerHTML = `
 
 const main = document.querySelector("#main");
 
-function realmDiagram() {
-  return `<div class="realm-diagram" aria-label="외곽세계 안에 천계·물질계·마계가 차례로 놓인 계층 구조"><span class="outer-world">외곽세계 <small>허무 에너지</small></span><div class="realm celestial"><span>천계</span><small>Celestial Realm</small></div><div class="realm material"><span>물질계</span><small>Material Realm</small><em>중심 세계</em></div><div class="realm abyss"><span>마계</span><small>Demon Realm</small></div><div class="realm-note">세계 간 진입은 일반적으로 편도이다</div></div>`;
-}
-
 function elementsDiagram() {
   const rows = getTable(parts[0].sections[2].body, "### 3-2.");
   const colors = [
@@ -84,15 +105,43 @@ function elementsDiagram() {
   return `<div class="element-grid">${rows.map((r, i) => `<div class="element" style="--element:${colors[i]}"><span class="element-glyph" aria-hidden="true">${["火", "水", "風", "土", "雷", "光", "暗", "無"][i]}</span><span>${escape(cleanText(r[0]).replace(" 마법", ""))}</span><span class="evolution-line" aria-hidden="true">↓</span><strong>${escape(cleanText(r[1]).split(" — ")[0])}</strong></div>`).join("")}</div><p class="diagram-caption">숙련도가 일정 수준에 이르면 상위 마법으로 진화하지만 무(無)는 진화하지 않는다</p>`;
 }
 
+const sectionHref = (partIndex, pattern) => {
+  const part = parts[partIndex];
+  const section = part?.sections.find((s) => pattern.test(s.title));
+  return articleLink(part?.id, section?.id);
+};
+const backgroundIslands = new Set(["waves", "galaxy", "topography", "threads", "particles"]);
+const island = (name, className = "") =>
+  `<div class="${className}" data-island="${name}"${backgroundIslands.has(name) ? ' aria-hidden="true"' : ""}></div>`;
+const sectionHead = (title, lede, href, action) =>
+  `<div class="home-heading"><div><h2>${title}</h2><p>${lede}</p></div><a class="btn btn-ghost" href="${href}">${action}</a></div>`;
+
+function codexIndex() {
+  return `<ol class="codex-index-list">${parts.map((p, i) => `<li><a href="#${p.id}"><span class="index-part">제${i + 1}부</span><span class="index-title">${shortTitles[i]}</span><span class="index-desc">${descriptions[i]}</span></a></li>`).join("")}</ol>`;
+}
+
+function nationsPanel(withLink) {
+  return `<section class="nations-panel">${island("topography", "panel-bg")}<div class="nations-head"><div><h2>대륙의 세력 관계</h2><p>세력을 누르면 위치와 통치와 이념이 보인다<br>이름은 모두 가칭이고 위치가 적히지 않은 곳은 관계에 맞춰 놓았다</p></div>${withLink ? `<a class="btn btn-glass" href="#part-2">지리와 국가 읽기</a>` : ""}</div>${island("nations")}</section>`;
+}
+
 function home() {
-  return `<section class="hero"><div class="hero-waves" aria-hidden="true"></div><div class="hero-content"><p class="hero-badge"><span>집필 중</span>현재 시점 대륙력 800년대</p><h1>이그니아 코덱스</h1><p class="hero-lede">과거·현재·미래 세계의 모든 지식이 담긴 제 4의 도서관</p><div class="hero-actions"><a class="btn btn-light" href="#part-1/part-1-s1">처음부터 읽기</a><a class="btn btn-glass" href="#pending">미정 항목 보기</a></div></div></section>
+  const { magic, stats, eras, turn } = codex;
+  const lineage = [...magic.lineage]
+    .sort((a, b) => magic.disciplines.findIndex((d) => d.name === a.parent) - magic.disciplines.findIndex((d) => d.name === b.parent))
+    .map((l) => `${topic(l.child)} ${l.parent}에서`)
+    .join(" ");
+  return `<section class="hero">${island("waves", "hero-waves")}<div class="hero-content"><p class="hero-badge"><span>집필 중</span>현재 시점 대륙력 800년대</p><div class="hero-title" data-island="heroTitle"><h1>이그니아 코덱스</h1><p class="hero-lede">${heroLede}</p></div><div class="hero-actions"><a class="btn btn-light" href="${sectionHref(0, /세계 구조/)}">처음부터 읽기</a><a class="btn btn-glass" href="#pending">미정 항목 보기</a></div></div></section>
   <div class="home-body">
     <div class="home-lead">
       <section class="stage-card"><div class="stage-art" role="img" aria-label="천계·물질계·심연을 표현한 이그니아 콘셉트 아트"></div><small class="stage-note">콘셉트 아트라 실제 지형과 다를 수 있음</small><p class="glass-badge"><span>현재 무대</span>대륙력 800년대</p><h2>이그나르 대륙</h2><p class="stage-lede">왕국과 제국은 국경에서 대치 중이고 마계 접경의 게이트는 점점 불안정해진다</p><a class="btn btn-light" href="#part-2">지리와 국가 보기</a></section>
-      <section class="codex-index" aria-labelledby="codex-index-title"><h2 id="codex-index-title">목차</h2><ol>${parts.map((p, i) => `<li><a href="#${p.id}"><span class="index-part">제${i + 1}부</span><span class="index-title">${shortTitles[i]}</span><span class="index-desc">${descriptions[i]}</span><svg class="index-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>`).join("")}</ol></section>
+      <section class="part-tiles-wrap" aria-label="목차"><div data-island="partTiles">${codexIndex()}</div></section>
     </div>
-    <section class="void-panel"><div class="void-copy"><h2>위에서부터 <br>천계·물질계·마계</h2><p>이그니아는 여러 세계가 층층이 포개진 다집합 구축형 세계다<br>허무 에너지만 있는 외곽세계를 사이에 두고 세 세계가 차례로 놓여 있고 그 중심은 물질계다</p><a class="btn btn-glass" href="#part-1/part-1-s1">세계 간 이동 읽기</a></div>${strataDiagram()}</section>
-    <section class="attr-section"><div class="home-heading"><h2>기본 속성 8종과 상위 마법</h2><a class="btn btn-ghost" href="#part-1/part-1-s3">융합·특수 속성 보기</a></div>${elementsDiagram()}</section>
+    <section class="void-panel">${island("galaxy", "panel-bg")}<div class="void-copy"><h2>위에서부터 <br>천계·물질계·마계</h2><p>이그니아는 여러 세계가 층층이 포개진 다집합 구축형 세계다<br>허무 에너지만 있는 외곽세계를 사이에 두고 세 세계가 차례로 놓여 있고 그 중심은 물질계다</p><a class="btn btn-glass" href="${sectionHref(0, /세계 구조/)}">세계 간 이동 읽기</a></div>${strataDiagram()}</section>
+    <section class="home-section">${sectionHead(`마력을 다루는 ${magic.disciplines.length}가지 방법`, `${lineage} 갈라져 나왔다`, sectionHref(0, /마력 체계/), "마력 체계 읽기")}${island("magic")}</section>
+    <section class="home-section">${sectionHead(`기본 속성 ${stats.attributes}종과 상위 마법`, "속성을 누르면 진화한 마법과 융합 조합이 보인다", sectionHref(0, /속성/), "속성 전체 읽기")}<div data-island="attributes">${elementsDiagram()}</div></section>
+    ${nationsPanel(true)}
+    <section class="home-section">${sectionHead(`${eras.length}개의 시대`, "막대를 누르면 그 시대의 사건이 보인다<br>겹친 막대는 같은 시기를 함께 지난 시대다", sectionHref(2, /연표/), "연표 읽기")}${island("eras")}</section>
+    <section class="home-section">${sectionHead(`한 턴은 행동 ${turn.actions}번`, "원문의 진행 예시로 한 턴을 차례대로 넘겨 본다", sectionHref(3, /턴 구조/), "턴 구조 읽기")}${island("turn")}</section>
     <section class="pending-strip"><div><h2>아직 정하지 않은 것들</h2><p>국가 정식 명칭·창세 가설·주사위 판정 여부처럼 원문에 🚧로 남겨 둔 항목</p></div><a class="btn btn-solid" href="#pending">미정 항목 ${pending.length}개 보기</a></section>
   </div>`;
 }
@@ -103,85 +152,127 @@ function strataDiagram() {
   return `<div class="strata-wrap"><div class="strata" role="img" aria-label="외곽세계를 사이에 두고 천계·물질계·마계가 차례로 놓인 계층 구조">${gap}<div class="stratum celestial"><strong>천계</strong><small>Celestial Realm</small></div>${gap}<div class="stratum material"><strong>물질계</strong><em>중심 세계</em><small>Material Realm</small></div>${gap}<div class="stratum abyss"><strong>마계</strong><small>Demon Realm</small></div>${gap}</div><p class="strata-note">세계 간 진입은 일반적으로 편도이다</p></div>`;
 }
 
-function nationDiagram() {
-  const nations = [...parts[1].body.matchAll(/^### (\d-\d)\. (.+)$/gm)].map(
-    (m) => cleanText(m[2]).split(" — ")[0],
-  );
-  const relations = [
-    [nations[0], "숙적 · 국경 충돌", nations[1]],
-    [nations[2], "상층과 하층 · 착취와 의존", nations[3]],
-    [nations[6], "탈주 마술사 · 긴장", nations[0]],
-  ];
-  return `<div class="info-panel"><h2>대륙의 세력 관계</h2><p class="diagram-caption">국가·지역 이름은 모두 가칭이며 실제 위치를 나타낸 지도가 아니다</p><div class="relations">${relations.map((r) => `<div><strong>${escape(r[0])}</strong><span>${r[1]}<i aria-hidden="true">⟷</i></span><strong>${escape(r[2])}</strong></div>`).join("")}</div><div class="nation-tags">${nations
-    .slice(4)
-    .map((n) => `<span>${escape(n)}</span>`)
-    .join("")}</div></div>`;
-}
-
-function historyDiagram() {
-  const section = parts[2].sections.find((s) => s.title === "연표");
-  const entries = section.body.split(/^### (.+)$/m);
-  return `<div class="timeline">${entries.slice(1).reduce((acc, item, i, a) => (i % 2 ? acc : acc + `<div class="timeline-entry"><span class="timeline-dot"></span><h3>${escape(item)}</h3><div>${md(a[i + 1] ?? "")}</div></div>`), "")}</div>`;
-}
-
-function visualFor(part, section) {
-  if (part.id === "part-1" && section?.id.endsWith("-s1"))
-    return `<div class="info-panel">${realmDiagram()}</div>`;
-  if (part.id === "part-1" && section?.id.endsWith("-s3"))
-    return `<div class="info-panel">${elementsDiagram()}</div>`;
-  if (part.id === "part-2" && !section) return nationDiagram();
-  if (part.id === "part-3" && section?.title === "연표")
-    return historyDiagram();
-  if (part.id === "part-4" && (!section || section.id.endsWith("-s2")))
-    return `<div class="turn-diagram info-panel"><h2>한 턴의 흐름</h2><div>${[1, 2, 3].map((n) => `<div><span>행동 ${n}</span><p>선택지 4개 → 선택 → 결과</p></div>`).join('<b aria-hidden="true">→</b>')}</div><p class="diagram-caption">행동 3번이 끝나면 다음 플레이어로 차례가 넘어가고 모두 한 번씩 마치면 1라운드가 끝난다</p></div>`;
+// Each chapter that has a picture in the codex gets its island above the prose.
+function chapterVisual(part, section) {
+  const t = section.title;
+  const at = (i, re) => part === parts[i] && re.test(t);
+  if (at(0, /세계 구조/))
+    return `<div class="void-panel is-compact">${island("galaxy", "panel-bg")}${strataDiagram()}</div>`;
+  if (at(0, /마력 체계/)) return island("magic", "chapter-visual");
+  if (at(0, /속성/)) return `<div class="chapter-visual" data-island="attributes">${elementsDiagram()}</div>`;
+  if (at(0, /장비/)) return island("grades", "chapter-visual");
+  if (at(1, /세력 관계/)) return nationsPanel(false);
+  if (at(2, /연표/)) return island("eras", "chapter-visual");
+  if (at(3, /턴 구조/)) return island("turn", "chapter-visual");
   return "";
 }
 
+// Every part opens on a void banner with its own moving background.
+const partBackgrounds = ["galaxy", "topography", "threads", "particles"];
+
 function article(part, section) {
   const index = parts.indexOf(part);
-  let content;
-  if (section) content = `<article class="prose">${md(section.body)}</article>`;
-  else
-    content = `<div class="prose part-intro">${md(part.intro)}</div>${part.sections.map((s) => `<section class="chapter" id="${s.id}"><h2><a href="${articleLink(part.id, s.id)}">${escape(s.title)} <span aria-hidden="true">↗</span></a></h2>${part.id === "part-3" && s.title === "연표" ? historyDiagram() : `<div class="prose">${md(s.body)}</div>`}</section>`).join("")}`;
-  if (part.id === "part-3" && section?.title === "연표") content = "";
-  return `<div class="reading-header"><span class="section-kicker">제${index + 1}부 · ${shortTitles[index]}</span><h1>${escape(section ? section.title.replace(/^\d+\. /, "") : shortTitles[index])}</h1><p>${descriptions[index]}</p></div><div class="reader-grid"><div class="reader-body">${visualFor(part, section)}${content}<div class="reading-end"><a href="#${part.id}">제${index + 1}부 전체 읽기</a><a href="#home">홈으로</a></div></div><aside class="toc" aria-label="이 부의 목차"><span>제${index + 1}부 목차</span>${part.sections.map((s) => `<a ${s === section ? 'aria-current="page"' : ""} href="${articleLink(part.id, s.id)}">${escape(s.title.replace(/ \(.+\)/, ""))}</a>`).join("")}<div class="toc-note">🚧 표시는<br>아직 정하지 않은 항목</div></aside></div>`;
+  const content = section
+    ? `${chapterVisual(part, section)}<article class="prose">${md(section.body)}</article>`
+    : `<div class="prose part-intro">${md(part.intro)}</div>${part.sections.map((s) => `<section class="chapter" id="${s.id}"><h2><a href="${articleLink(part.id, s.id)}">${escape(s.title)}</a></h2>${chapterVisual(part, s)}<div class="prose">${md(s.body)}</div></section>`).join("")}`;
+  return `<header class="part-banner">${island(partBackgrounds[index] ?? "galaxy", "panel-bg")}<div class="part-banner-copy"><p class="glass-badge"><span>제${index + 1}부</span>${shortTitles[index]}</p><h1>${escape(section ? section.title.replace(/^\d+\. /, "") : shortTitles[index])}</h1><p>${descriptions[index]}</p></div></header><div class="reader-grid"><div class="reader-body">${content}<div class="reading-end"><a href="#${part.id}">제${index + 1}부 전체 읽기</a><a href="#home">홈으로</a></div></div><aside class="toc" aria-label="이 부의 목차"><span>제${index + 1}부 목차</span>${part.sections.map((s) => `<a ${s === section ? 'aria-current="page"' : ""} href="${articleLink(part.id, s.id)}">${escape(s.title.replace(/ \(.+\)/, ""))}</a>`).join("")}<div class="toc-note">🚧 표시는<br>아직 정하지 않은 항목</div></aside></div>`;
 }
 
 function pendingPage() {
   return `<div class="reading-header"><span class="section-kicker">작업 중</span><h1>미정 항목</h1><p>원문에 🚧나 ‘미정’으로 남겨 둔 줄을 모았다<br>원문에서 정리하면 이 목록에서도 빠진다</p></div><div class="pending-list">${pending.map(({ part, section, lines }) => `<article><div class="pending-meta"><span>${escape(part.title)}</span><span class="draft-pill">검토 중</span></div><h2><a href="${articleLink(part.id, section.id)}">${escape(section.title)} ↗</a></h2><div class="prose">${md(lines.join("\n\n"))}</div></article>`).join("")}</div><div class="info-panel"><h2>국가명은 모두 가칭</h2><p>나라마다 이름 후보를 여럿 두었고 정하기 전까지는 첫 번째 후보로 적는다</p><a class="text-link" href="#part-2">명칭 후보 보기 ↗</a></div>`;
 }
 
-let unmountHome = null;
-// React and the effect load as a separate chunk so the page text shows first.
-function mountHome() {
-  const container = main.querySelector(".hero-waves");
-  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let unmount = null;
-  let cancelled = false;
-  Promise.all([
-    import("./islands.jsx"),
-    import("./components/GradientWaves.jsx"),
-  ]).then(([{ mountIsland }, { default: GradientWaves }]) => {
-    if (cancelled) return;
-    unmount = mountIsland(container, GradientWaves, {
-      horizonColor: "#3B2F9E",
-      waveColor: "#6D5CE8",
-      crestColor: "#E5E0FF",
-      speed: reduceMotion ? 0 : 0.35,
-      fogDepth: 20,
-      grain: !reduceMotion,
-      mouseInteraction: !reduceMotion,
-    });
-  });
-  return () => {
-    cancelled = true;
-    unmount?.();
-  };
+// Props for each island. React and the effects load as separate chunks so the
+// page text shows first; reduced motion keeps the pictures but stills them.
+function islandProps(name) {
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const { magic, attributes, grades, nations, eras, turn, stats } = codex;
+  switch (name) {
+    case "waves":
+      return {
+        horizonColor: "#3B2F9E",
+        waveColor: "#6D5CE8",
+        crestColor: "#E5E0FF",
+        speed: still ? 0 : 0.35,
+        fogDepth: 20,
+        grain: !still,
+        mouseInteraction: !still,
+      };
+    case "galaxy":
+      return {
+        hueShift: 250,
+        saturation: 0.35,
+        density: 1.1,
+        glowIntensity: 0.35,
+        twinkleIntensity: 0.4,
+        speed: 0.6,
+        starSpeed: 0.3,
+        rotationSpeed: 0.04,
+        mouseRepulsion: !still,
+        mouseInteraction: !still,
+        disableAnimation: still,
+        transparent: true,
+      };
+    case "topography":
+      return {
+        lowColor: "#2A2170",
+        midColor: "#8F80F5",
+        highColor: "#E5E0FF",
+        speed: still ? 0 : 0.25,
+        morphSpeed: still ? 0 : 0.04,
+        opacity: 0.55,
+        glow: 0.35,
+        grain: false,
+        mouseInteraction: !still,
+      };
+    case "threads":
+      return { color: [0.9, 0.87, 1], amplitude: 1.3, distance: 0.15, enableMouseInteraction: !still };
+    case "particles":
+      return {
+        particleColors: ["#E5E0FF", "#FF7947", "#9D8FF5"],
+        particleCount: 220,
+        particleSpread: 11,
+        speed: still ? 0 : 0.08,
+        particleBaseSize: 110,
+        alphaParticles: true,
+        moveParticlesOnHover: !still,
+        disableRotation: still,
+      };
+    case "heroTitle":
+      return { title: "이그니아 코덱스", lede: heroLede, still };
+    case "partTiles":
+      return {
+        still,
+        data: { basics: attributes.basics, nations, eras, turn },
+        tiles: [
+          { kind: "attributes", stats: [["기본 속성", stats.attributes], ["특수 속성", stats.special], ["종족군", stats.races]] },
+          { kind: "nations", stats: [["세력", stats.nations], ["주요 지형", stats.terrains]] },
+          { kind: "eras", stats: [["시대", stats.eras], ["현재 대륙력", 800, "년대"]] },
+          { kind: "turn", stats: [["턴당 행동", stats.actions], ["행동당 선택지", stats.options]] },
+        ].map((tile, i) => ({ ...tile, href: `#${parts[i].id}`, label: `제${i + 1}부`, title: shortTitles[i] })),
+      };
+    case "magic":
+      return magic;
+    case "attributes":
+      return attributes;
+    case "grades":
+      return { grades };
+    case "nations":
+      return { nations };
+    case "eras":
+      return { eras };
+    case "turn":
+      return { turn };
+    default:
+      return {};
+  }
 }
 
+let unmountIslands = null;
+
 function render() {
-  unmountHome?.();
-  unmountHome = null;
+  unmountIslands?.();
+  unmountIslands = null;
   const [route = "home", sectionId] = location.hash.slice(1).split("/");
   const part = parts.find((p) => p.id === route);
   const section = part?.sections.find((s) => s.id === sectionId);
@@ -198,10 +289,8 @@ function render() {
   }
   const isHome = !part && route !== "pending" && route !== "original";
   main.dataset.route = isHome ? "home" : "page";
-  if (isHome) {
-    main.innerHTML = home();
-    unmountHome = mountHome();
-  }
+  if (isHome) main.innerHTML = home();
+  unmountIslands = mountIslands(main, islandProps);
   document.title = isHome
     ? "이그니아 코덱스"
     : `${section ? cleanText(section.title) : label} — 이그니아 코덱스`;

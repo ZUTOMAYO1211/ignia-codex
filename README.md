@@ -41,6 +41,25 @@ GitHub Pages를 GitHub Actions 방식으로 설정한다. `main`에 푸시하면
 
 색은 `src/style.css` 맨 위의 변수(`--bg`, `--panel`, `--ink`, `--text`, `--muted`, `--accent-text` 등)로 관리하고, `:root[data-theme="dark"]`에서 같은 변수의 다크 값을 덮어쓴다. 새 스타일을 추가할 때는 색을 직접 적지 말고 이 변수를 쓴다. 홈 히어로는 원래 어두운 외곽세계라 두 모드에서 같은 색을 쓴다.
 
+## 시각 자료
+
+홈과 본문 페이지의 그림은 모두 원본 MD를 읽어 그린다. `src/content.js`가 설정을 데이터로 뽑고(`getMagicSystem` `getAttributes` `getNations` `getEras` `getTurnRules` `getGrades` `getCodexStats`), `tests/content.test.js`가 그 결과를 검사한다. MD의 제목·표·목록 형식을 바꾸면 테스트가 먼저 알려준다.
+
+| 그림 | 파일 | 원본 위치 | 쓰는 React Bits |
+| :--- | :--- | :--- | :--- |
+| 히어로 제목·문장 | `src/visuals/HeroTitle.jsx` | 사이트 문구 | BlurText · DecryptedText |
+| 제1~4부 타일 | `src/visuals/PartTiles.jsx` | 속성·국가·연표·턴 수치 | SpotlightCard · CountUp |
+| 마력 체계 계보 | `src/visuals/MagicLineage.jsx` | 제1부 §2 | SpotlightCard |
+| 속성 바퀴 | `src/visuals/AttributeWheel.jsx` | 제1부 §3 표 | 직접 제작 |
+| 장비 등급 | `src/visuals/GradeLadder.jsx` | 제1부 §10 표 | 직접 제작 |
+| 세력 관계도 | `src/visuals/NationMap.jsx` | 제2부 §3~5 | 직접 제작 · Topography 배경 |
+| 시대 연표 | `src/visuals/EraTimeline.jsx` | 제3부 연표 | 직접 제작 |
+| 한 턴 체험 | `src/visuals/TurnDemo.jsx` | 제4부 §2·§8 | Stepper |
+
+부별 머리 배경은 제1부 Galaxy, 제2부 Topography, 제3부 Threads, 제4부 Particles이고, 세계 구조 패널에도 Galaxy를 깐다. 세력 관계도의 점 위치와 관계의 의미(숙적·팽창 위협 등)는 `NationMap.jsx` 안에 정의되어 있으므로 제2부 §5를 크게 바꾸면 함께 고친다. Stepper에는 마지막 버튼 문구를 바꾸는 `completeButtonText` 옵션을 한 줄 추가했다.
+
+`src/islandManager.js`는 `data-island` 자리가 화면 근처에 오면 해당 컴포넌트를 불러와 붙이고, WebGL 배경은 화면에서 멀어지면 다시 뗀다. 동작 줄이기 설정에서는 애니메이션을 멈춘 채로 그린다.
+
 ## React 컴포넌트
 
 사이트 전체는 React 없이 동작하고, React Bits 같은 React 컴포넌트는 필요한 자리에만 붙인다. 컴포넌트 원본은 `src/components/`에 그대로 두고, `src/islands.jsx`의 `mountIsland(요소, 컴포넌트, props)`로 페이지의 특정 요소 안에 띄운다. 반환값은 정리 함수이므로 페이지를 옮길 때 호출한다. React와 컴포넌트는 `import()`로 따로 불러와 첫 화면 글자가 먼저 뜨게 한다.

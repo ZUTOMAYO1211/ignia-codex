@@ -1,7 +1,19 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { parseCodex, getPending, getTable } from "../src/content.js";
+import {
+  parseCodex,
+  getPending,
+  getTable,
+  getMagicSystem,
+  getAttributes,
+  getGrades,
+  getNations,
+  getTerrains,
+  getEras,
+  getTurnRules,
+  getCodexStats,
+} from "../src/content.js";
 const raw = readFileSync(
   new URL("../이그니아_통합문서.md", import.meta.url),
   "utf8",
@@ -26,4 +38,56 @@ test("unfinished rules remain visible, including provisional judgments", () => {
   assert.ok(pending.some((p) => p.section.title.includes("창세")));
   assert.ok(pending.some((p) => p.lines.some((line) => line.includes("미정"))));
   assert.ok(pending.some((p) => p.lines.some((line) => line.includes("사망·부활"))));
+});
+test("magic disciplines keep their mottos and lineage", () => {
+  const { disciplines, lineage } = getMagicSystem(parts);
+  assert.deepEqual(
+    disciplines.map((d) => d.name),
+    ["마법", "마술", "주술", "연금술", "마도구"],
+  );
+  assert.equal(disciplines[0].motto, "정의된 법칙의 구현");
+  assert.ok(disciplines.every((d) => d.summary.length > 10));
+  assert.deepEqual(lineage, [
+    { child: "주술", parent: "마술" },
+    { child: "연금술", parent: "마법" },
+  ]);
+});
+test("attributes expose evolution, fusions with undecided results, and aptitude attributes", () => {
+  const { basics, fusions, special } = getAttributes(parts);
+  assert.equal(basics.length, 8);
+  assert.deepEqual(basics[0], { name: "불", glyph: "火", evolved: "연옥마법", evolves: true });
+  assert.equal(basics[7].evolves, false);
+  assert.equal(fusions[0].result, "뇌명마법");
+  assert.equal(fusions.filter((f) => f.pending).length, 2);
+  assert.equal(special.length, 11);
+});
+test("nations, terrains, and equipment grades parse from their tables and sections", () => {
+  const nations = getNations(parts);
+  assert.equal(nations.length, 10);
+  assert.equal(nations[0].id, "3-1");
+  assert.equal(nations[0].candidates.length, 3);
+  assert.ok(nations[0].fields["위치"].includes("서부"));
+  assert.equal(nations.at(-1).id, "4-6");
+  assert.equal(getTerrains(parts).length, 8);
+  assert.deepEqual(getGrades(parts).map((g) => g.en), ["Common", "Rare", "Unique", "Legend", "Genesis"]);
+});
+test("eras carry numeric spans for the timeline", () => {
+  const eras = getEras(parts);
+  assert.equal(eras[0].start, null);
+  assert.deepEqual([eras[1].start, eras[1].end], [0, 99]);
+  const split = eras.find((e) => e.name === "분열기");
+  assert.deepEqual([split.start, split.end], [100, 399]);
+  assert.deepEqual([eras.at(-1).start, eras.at(-1).end], [800, 899]);
+  assert.ok(eras.every((e) => e.events.length > 0));
+});
+test("turn rules come from the roleplay chapter and its worked example", () => {
+  const turn = getTurnRules(parts);
+  assert.equal(turn.actions, 3);
+  assert.equal(turn.options, 4);
+  assert.equal(turn.choices.length, 4);
+  assert.match(turn.scene, /균열 협곡/);
+  assert.match(turn.actor, /리안/);
+  const stats = getCodexStats(parts);
+  assert.equal(stats.nations, 10);
+  assert.equal(stats.races, 4);
 });

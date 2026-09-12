@@ -12,6 +12,7 @@
   "dependencies": {
     "dompurify": "^3.2.6",
     "marked": "^15.0.12",
+    "motion": "^12.43.0",
     "ogl": "^1.0.11",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"

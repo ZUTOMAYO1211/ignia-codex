@@ -1549,3 +1549,9 @@ footer > a:hover {
     animation: none !important;
   }
 }
+
+/* Generated icon tiles retain the same background colors in both themes. */
+.element-image{display:block;object-fit:contain;border-radius:14%;flex-shrink:0}
+.wheel-icon{clip-path:inset(0 round 9px);pointer-events:none}
+.wheel-detail>.element-image{margin-bottom:14px}
+.mini-glyphs .element-image{width:36px;height:36px}

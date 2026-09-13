@@ -1,3 +1,4 @@
+import { elementIcon } from "../elementIcons.js";
 import { useState } from "react";
 import { elementColor } from "./palette.js";
 import "./visuals.css";
@@ -76,9 +77,7 @@ export default function AttributeWheel({ basics, fusions, special }) {
           return (
             <g key={b.glyph} {...nodeProps(b)}>
               <circle cx={x} cy={y} r="38" className="wheel-dot" />
-              <text x={x} y={y + 11} className="wheel-glyph">
-                {b.glyph}
-              </text>
+              <image href={elementIcon(b.glyph)} x={x - 32} y={y - 32} width="64" height="64" className="wheel-icon" aria-hidden="true" />
               <text x={lx} y={ly - 6} textAnchor={anchor} className="wheel-name">
                 {b.name}
               </text>
@@ -91,18 +90,14 @@ export default function AttributeWheel({ basics, fusions, special }) {
         {core.map((b) => (
           <g key={b.glyph} {...nodeProps(b)}>
             <circle cx={C} cy={C} r="42" className="wheel-dot is-core" />
-            <text x={C} y={C + 12} className="wheel-glyph is-core">
-              {b.glyph}
-            </text>
+            <image href={elementIcon(b.glyph)} x={C - 35} y={C - 35} width="70" height="70" className="wheel-icon" aria-hidden="true" />
           </g>
         ))}
       </svg>
       <div className="wheel-detail" aria-live="polite">
         {current ? (
           <>
-            <p className="wheel-detail-glyph" style={{ "--el": elementColor(current.glyph) }}>
-              {current.glyph}
-            </p>
+            <img className="element-image" src={elementIcon(current.glyph)} alt="" width="64" height="64" />
             <h3>{current.name} 마법</h3>
             <p>
               {current.evolves

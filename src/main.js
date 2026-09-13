@@ -1,3 +1,4 @@
+import { elementIcon } from "./elementIcons.js";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import raw from "../이그니아_통합문서.md?raw";
@@ -102,7 +103,7 @@ function elementsDiagram() {
     "#494d83",
     "#505865",
   ];
-  return `<div class="element-grid">${rows.map((r, i) => `<div class="element" style="--element:${colors[i]}"><span class="element-glyph" aria-hidden="true">${["火", "水", "風", "土", "雷", "光", "暗", "無"][i]}</span><span>${escape(cleanText(r[0]).replace(" 마법", ""))}</span><span class="evolution-line" aria-hidden="true">↓</span><strong>${escape(cleanText(r[1]).split(" — ")[0])}</strong></div>`).join("")}</div><p class="diagram-caption">숙련도가 일정 수준에 이르면 상위 마법으로 진화하지만 무(無)는 진화하지 않는다</p>`;
+  return `<div class="element-grid">${rows.map((r, i) => `<div class="element" style="--element:${colors[i]}"><img class="element-image" src="${elementIcon(["火", "水", "風", "土", "雷", "光", "暗", "無"][i])}" alt="" width="64" height="64" /><span>${escape(cleanText(r[0]).replace(" 마법", ""))}</span><span class="evolution-line" aria-hidden="true">↓</span><strong>${escape(cleanText(r[1]).split(" — ")[0])}</strong></div>`).join("")}</div><p class="diagram-caption">숙련도가 일정 수준에 이르면 상위 마법으로 진화하지만 무(無)는 진화하지 않는다</p>`;
 }
 
 const sectionHref = (partIndex, pattern) => {

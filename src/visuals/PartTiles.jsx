@@ -1,6 +1,6 @@
 import SpotlightCard from "../components/SpotlightCard.jsx";
 import CountUp from "../components/CountUp.jsx";
-import { elementColor } from "./palette.js";
+import { elementIcon } from "../elementIcons.js";
 import "./visuals.css";
 
 const Num = ({ value, still }) =>
@@ -11,9 +11,7 @@ function Mini({ kind, data }) {
     return (
       <div className="mini-glyphs" aria-hidden="true">
         {data.basics.map((b) => (
-          <span key={b.glyph} style={{ "--el": elementColor(b.glyph) }}>
-            {b.glyph}
-          </span>
+          <img key={b.glyph} src={elementIcon(b.glyph)} alt="" width="36" height="36" className="element-image" />
         ))}
       </div>
     );

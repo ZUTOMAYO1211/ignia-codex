@@ -432,13 +432,13 @@
   stroke-dasharray: 7 4;
 }
 .nation-edge.is-tension line {
-  stroke: #ffc26b;
+  stroke: #e5e0ff;
   stroke-width: 2.5;
   stroke-dasharray: 2 5;
   stroke-linecap: round;
 }
 .nation-edge.is-courting line {
-  stroke: #ff9f7a;
+  stroke: rgb(255 121 71 / 0.7);
   stroke-dasharray: 5 5;
 }
 .nation-edge.is-threat line {
@@ -686,7 +686,7 @@
 }
 .era-bar.is-now {
   color: #fff;
-  background: linear-gradient(90deg, #ff7947, #ff9f7a);
+  background: #ff7947;
   border-color: transparent;
 }
 .era-bar.is-selected {
@@ -953,16 +953,16 @@
   color: var(--muted);
 }
 .grade-step.is-common {
-  --grade: #9aa0b2;
+  --grade: linear-gradient(180deg, #c9c6dc, #9d9ab8);
 }
 .grade-step.is-rare {
-  --grade: linear-gradient(180deg, #6ea3ea, #3c75c9);
+  --grade: linear-gradient(180deg, #9fb2ff, #3454d1);
 }
 .grade-step.is-unique {
-  --grade: linear-gradient(180deg, #a78bff, #6d4fd6);
+  --grade: linear-gradient(180deg, #b9aeff, #6d5ce8);
 }
 .grade-step.is-legend {
-  --grade: linear-gradient(180deg, #ffc46b, #ff7947);
+  --grade: linear-gradient(180deg, #ffb591, #ff7947);
 }
 .grade-step.is-genesis {
   --grade: radial-gradient(circle at 50% 20%, #e5e0ff 0 6%, transparent 7%),

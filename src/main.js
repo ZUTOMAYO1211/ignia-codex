@@ -200,8 +200,8 @@ function islandProps(name) {
       };
     case "galaxy":
       return {
-        hueShift: 250,
-        saturation: 0.35,
+        hueShift: 0,
+        saturation: 0,
         density: 1.1,
         glowIntensity: 0.35,
         twinkleIntensity: 0.4,
@@ -229,7 +229,7 @@ function islandProps(name) {
       return { color: [0.9, 0.87, 1], amplitude: 1.3, distance: 0.15, enableMouseInteraction: !still };
     case "particles":
       return {
-        particleColors: ["#E5E0FF", "#FF7947", "#9D8FF5"],
+        particleColors: ["#E5E0FF", "#B9AEFF", "#9FB2FF"],
         particleCount: 220,
         particleSpread: 11,
         speed: still ? 0 : 0.08,

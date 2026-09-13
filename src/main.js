@@ -78,7 +78,7 @@ const allSections = parts.flatMap((p) =>
 const articleLink = (p, s) => `#${p}${s ? "/" + s : ""}`;
 
 document.querySelector("#app").innerHTML = `
-  <div class="backdrop" aria-hidden="true"><i class="orb-blue"></i><i class="orb-violet"></i><i class="orb-cobalt"></i><i class="orb-light"></i><i class="seal-rings"></i></div>
+  <div class="backdrop" aria-hidden="true"><i class="orb-blue"></i><i class="orb-violet"></i><i class="orb-cobalt"></i><i class="orb-light"></i><i class="seal-rings"></i><div class="backdrop-scene"></div></div>
   <header class="site-nav">
     <a class="brand" href="#home" aria-label="이그니아 코덱스 홈">${sealMark("brand-mark")}<span>ignia<span class="brand-dot">.</span></span></a>
     <nav id="navigation" aria-label="설정집 탐색">
@@ -113,7 +113,7 @@ const sectionHref = (partIndex, pattern) => {
   const section = part?.sections.find((s) => pattern.test(s.title));
   return articleLink(part?.id, section?.id);
 };
-const backgroundIslands = new Set(["waves", "wavesDeep", "galaxy", "topography", "threads", "particles"]);
+const backgroundIslands = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid"]);
 const island = (name, className = "") =>
   `<div class="${className}" data-island="${name}"${backgroundIslands.has(name) ? ' aria-hidden="true"' : ""}></div>`;
 const sectionHead = (title, lede, href, action) =>
@@ -170,17 +170,15 @@ function chapterVisual(part, section) {
   return "";
 }
 
-// Every part opens on a void banner with its own moving background. The world
-// setting part reuses the hero's waves in a darker tone.
-const partBackgrounds = ["wavesDeep", "topography", "threads", "particles"];
+// Every part opens on a void banner with its own moving background.
+const partBackgrounds = ["galaxy", "topography", "threads", "particles"];
 
 function article(part, section) {
   const index = parts.indexOf(part);
   const content = section
     ? `${chapterVisual(part, section)}<article class="prose">${md(section.body)}</article>`
     : `<div class="prose part-intro">${md(part.intro)}</div>${part.sections.map((s) => `<section class="chapter" id="${s.id}"><h2><a href="${articleLink(part.id, s.id)}">${escape(s.title)}</a></h2>${chapterVisual(part, s)}<div class="prose">${md(s.body)}</div></section>`).join("")}`;
-  const background = partBackgrounds[index] ?? "galaxy";
-  return `<header class="part-banner is-${background}">${island(background, "panel-bg")}<div class="part-banner-copy"><p class="glass-badge"><span>제${index + 1}부</span>${shortTitles[index]}</p><h1>${escape(section ? section.title.replace(/^\d+\. /, "") : shortTitles[index])}</h1><p>${descriptions[index]}</p></div></header><div class="reader-grid"><div class="reader-body">${content}<div class="reading-end"><a href="#${part.id}">제${index + 1}부 전체 읽기</a><a href="#home">홈으로</a></div></div><aside class="toc" aria-label="이 부의 목차"><span>제${index + 1}부 목차</span>${part.sections.map((s) => `<a ${s === section ? 'aria-current="page"' : ""} href="${articleLink(part.id, s.id)}">${escape(s.title.replace(/ \(.+\)/, ""))}</a>`).join("")}<div class="toc-note">🚧 표시는<br>아직 정하지 않은 항목</div></aside></div>`;
+  return `<header class="part-banner">${island(partBackgrounds[index] ?? "galaxy", "panel-bg")}<div class="part-banner-copy"><p class="glass-badge"><span>제${index + 1}부</span>${shortTitles[index]}</p><h1>${escape(section ? section.title.replace(/^\d+\. /, "") : shortTitles[index])}</h1><p>${descriptions[index]}</p></div></header><div class="reader-grid"><div class="reader-body">${content}<div class="reading-end"><a href="#${part.id}">제${index + 1}부 전체 읽기</a><a href="#home">홈으로</a></div></div><aside class="toc" aria-label="이 부의 목차"><span>제${index + 1}부 목차</span>${part.sections.map((s) => `<a ${s === section ? 'aria-current="page"' : ""} href="${articleLink(part.id, s.id)}">${escape(s.title.replace(/ \(.+\)/, ""))}</a>`).join("")}<div class="toc-note">🚧 표시는<br>아직 정하지 않은 항목</div></aside></div>`;
 }
 
 function pendingPage() {
@@ -203,16 +201,19 @@ function islandProps(name) {
         grain: !still,
         mouseInteraction: !still,
       };
-    case "wavesDeep":
+    case "acid":
       return {
-        horizonColor: "#0E0B26",
-        waveColor: "#3454D1",
-        crestColor: "#8F80F5",
-        brightness: 0.9,
-        speed: still ? 0 : 0.3,
-        fogDepth: 26,
-        grain: !still,
-        mouseInteraction: !still,
+        color1: "#2A2170",
+        color2: "#3454D1",
+        color3: "#8F80F5",
+        detail: "low",
+        speed: still ? 0 : 0.25,
+        waveDepth: 0.8,
+        brightness: 1.5,
+        opacity: 1,
+        mouseInteraction: false,
+        grain: false,
+        maxDpr: 1,
       };
     case "galaxy":
       return {
@@ -286,6 +287,21 @@ function islandProps(name) {
 
 let unmountIslands = null;
 
+// The world setting part sits in a dark crystal corridor behind every pane. The
+// scene stays mounted while the reader moves between its chapters.
+const backdropScene = document.querySelector(".backdrop-scene");
+let sceneName = null;
+let unmountScene = null;
+function setScene(name) {
+  if (name === sceneName) return;
+  unmountScene?.();
+  sceneName = name;
+  if (name) document.body.dataset.scene = name;
+  else delete document.body.dataset.scene;
+  backdropScene.innerHTML = name ? island(name, "backdrop-effect") : "";
+  unmountScene = name ? mountIslands(backdropScene, islandProps) : null;
+}
+
 function render() {
   unmountIslands?.();
   unmountIslands = null;
@@ -303,6 +319,7 @@ function render() {
     main.innerHTML = `<div class="reading-header"><span class="section-kicker">원문</span><h1>이그니아 통합 코덱스</h1><p>이 사이트의 내용은 전부 이 MD 파일 하나에서 나온다</p><button id="download-md" class="primary-link">MD 파일 받기 ↓</button></div><article class="prose original">${md(raw)}</article>`;
     label = "원문 보기";
   }
+  setScene(part === parts[0] ? "acid" : null);
   const isHome = !part && route !== "pending" && route !== "original";
   main.dataset.route = isHome ? "home" : "page";
   if (isHome) main.innerHTML = home();

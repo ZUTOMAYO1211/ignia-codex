@@ -61,7 +61,7 @@ GitHub Pages를 GitHub Actions 방식으로 설정한다. `main`에 푸시하면
 | 시대 연표 | `src/visuals/EraTimeline.jsx` | 제3부 연표 | 직접 제작 |
 | 한 턴 체험 | `src/visuals/TurnDemo.jsx` | 제4부 §2·§8 | Stepper |
 
-부별 머리 배경은 제1부 GradientWaves(홈 히어로와 같은 물결을 더 어두운 색으로 쓴 `wavesDeep`), 제2부 Topography, 제3부 Threads, 제4부 Particles이고, 세계 구조 패널에는 Galaxy를 깐다. 세력 관계도의 점 위치와 관계의 의미(숙적·팽창 위협 등)는 `NationMap.jsx` 안에 정의되어 있으므로 제2부 §5를 크게 바꾸면 함께 고친다. Stepper에는 마지막 버튼 문구를 바꾸는 `completeButtonText` 옵션을 한 줄 추가했다.
+부별 머리 배경은 제1부 Galaxy, 제2부 Topography, 제3부 Threads, 제4부 Particles이고, 세계 구조 패널에도 Galaxy를 깐다. 제1부 세계 설정을 읽는 동안에는 페이지 맨 뒤 배경이 AcidSquares(`src/components/AcidSquares.jsx`)로 바뀐다. 사이트 색보다 한 단계 어두운 남보라·코발트·바이올렛 결정 복도이고, `src/main.js`의 `setScene`이 `.backdrop` 안에 붙여 제1부 챕터 사이를 옮겨도 다시 그리지 않는다. 이 배경 위에서는 라이트 모드의 유리를 더 불투명하게 하고 유리 밖에 놓인 챕터 제목·푸터 글자를 밝게 바꾼다. 원본 컴포넌트에는 캔버스 해상도 상한 `maxDpr` 옵션을 한 줄 추가했다. 세력 관계도의 점 위치와 관계의 의미(숙적·팽창 위협 등)는 `NationMap.jsx` 안에 정의되어 있으므로 제2부 §5를 크게 바꾸면 함께 고친다. Stepper에는 마지막 버튼 문구를 바꾸는 `completeButtonText` 옵션을 한 줄 추가했다.
 
 `src/islandManager.js`는 `data-island` 자리가 화면 근처에 오면 해당 컴포넌트를 불러와 붙이고, WebGL 배경은 화면에서 멀어지면 다시 뗀다. 동작 줄이기 설정에서는 애니메이션을 멈춘 채로 그린다.
 

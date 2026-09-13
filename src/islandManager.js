@@ -3,11 +3,11 @@
 // the ones on screen keep drawing.
 const loaders = {
   waves: () => import("./components/GradientWaves.jsx"),
-  wavesDeep: () => import("./components/GradientWaves.jsx"),
   galaxy: () => import("./components/Galaxy.jsx"),
   topography: () => import("./components/Topography.jsx"),
   threads: () => import("./components/Threads.jsx"),
   particles: () => import("./components/Particles.jsx"),
+  acid: () => import("./components/AcidSquares.jsx"),
   heroTitle: () => import("./visuals/HeroTitle.jsx"),
   partTiles: () => import("./visuals/PartTiles.jsx"),
   magic: () => import("./visuals/MagicLineage.jsx"),
@@ -17,7 +17,7 @@ const loaders = {
   turn: () => import("./visuals/TurnDemo.jsx"),
   grades: () => import("./visuals/GradeLadder.jsx"),
 };
-const backgrounds = new Set(["waves", "wavesDeep", "galaxy", "topography", "threads", "particles"]);
+const backgrounds = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid"]);
 
 export function mountIslands(root, getProps) {
   const live = new Map();

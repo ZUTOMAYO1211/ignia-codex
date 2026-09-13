@@ -56,7 +56,7 @@ const escape = (value) =>
 const md = (value) => DOMPurify.sanitize(marked.parse(value));
 // The codex seal: the outer rings are the void around every world, the eight
 // small crystals are the basic attributes, and the split crystal stacks the
-// celestial realm (open), the material realm (ember), and the demon realm (solid).
+// celestial realm (open), the material realm (crystal blue), and the demon realm (solid).
 const sealOrnaments = Array.from({ length: 8 }, (_, i) => {
   const a = (i * Math.PI) / 4 - Math.PI / 2;
   const [ux, uy] = [Math.cos(a), Math.sin(a)];
@@ -69,7 +69,7 @@ const sealMark = (className) => `<svg class="${className}" viewBox="0 0 64 64" a
   <circle cx="32" cy="32" r="23" fill="none" stroke="currentColor" stroke-width="1.25"/>
   <path d="${sealOrnaments}" fill="currentColor"/>
   <path d="M32 14.8 38.4 24.6H25.6Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M22.92 28h18.16L43.5 32l-2.42 4H22.92L20.5 32Z" fill="var(--orange)"/>
+  <path d="M22.92 28h18.16L43.5 32l-2.42 4H22.92L20.5 32Z" fill="var(--crystal)"/>
   <path d="M24.43 38.5h15.14L32 51Z" fill="currentColor"/>
 </svg>`;
 const allSections = parts.flatMap((p) =>
@@ -78,6 +78,7 @@ const allSections = parts.flatMap((p) =>
 const articleLink = (p, s) => `#${p}${s ? "/" + s : ""}`;
 
 document.querySelector("#app").innerHTML = `
+  <div class="backdrop" aria-hidden="true"><i class="orb-blue"></i><i class="orb-violet"></i><i class="orb-cobalt"></i><i class="orb-light"></i><i class="seal-rings"></i></div>
   <header class="site-nav">
     <a class="brand" href="#home" aria-label="이그니아 코덱스 홈">${sealMark("brand-mark")}<span>ignia<span class="brand-dot">.</span></span></a>
     <nav id="navigation" aria-label="설정집 탐색">
@@ -135,7 +136,7 @@ function home() {
   return `<section class="hero">${island("waves", "hero-waves")}<div class="hero-content"><p class="hero-badge"><span>집필 중</span>현재 시점 대륙력 800년대</p><div class="hero-title" data-island="heroTitle"><h1>이그니아 코덱스</h1><p class="hero-lede">${heroLede}</p></div><div class="hero-actions"><a class="btn btn-light" href="${sectionHref(0, /세계 구조/)}">처음부터 읽기</a><a class="btn btn-glass" href="#pending">미정 항목 보기</a></div></div></section>
   <div class="home-body">
     <div class="home-lead">
-      <section class="stage-card"><div class="stage-art" role="img" aria-label="천계·물질계·심연을 표현한 이그니아 콘셉트 아트"></div><small class="stage-note">콘셉트 아트라 실제 지형과 다를 수 있음</small><p class="glass-badge"><span>현재 무대</span>대륙력 800년대</p><h2>이그나르 대륙</h2><p class="stage-lede">왕국과 제국은 국경에서 대치 중이고 마계 접경의 게이트는 점점 불안정해진다</p><a class="btn btn-light" href="#part-2">지리와 국가 보기</a></section>
+      <section class="stage-card"><div class="stage-art" role="img" aria-label="천계·물질계·심연을 표현한 이그니아 콘셉트 아트"></div><small class="stage-note">콘셉트 아트라 실제 지형과 다를 수 있음</small><div class="stage-copy"><p class="glass-badge"><span>현재 무대</span>대륙력 800년대</p><h2>이그나르 대륙</h2><p class="stage-lede">왕국과 제국은 국경에서 대치 중이고 마계 접경의 게이트는 점점 불안정해진다</p><a class="btn btn-light" href="#part-2">지리와 국가 보기</a></div></section>
       <section class="part-tiles-wrap" aria-label="목차"><div data-island="partTiles">${codexIndex()}</div></section>
     </div>
     <section class="void-panel">${island("galaxy", "panel-bg")}<div class="void-copy"><h2>위에서부터 <br>천계·물질계·마계</h2><p>이그니아는 여러 세계가 층층이 포개진 다집합 구축형 세계다<br>허무 에너지만 있는 외곽세계를 사이에 두고 세 세계가 차례로 놓여 있고 그 중심은 물질계다</p><a class="btn btn-glass" href="${sectionHref(0, /세계 구조/)}">세계 간 이동 읽기</a></div>${strataDiagram()}</section>
@@ -192,9 +193,9 @@ function islandProps(name) {
   switch (name) {
     case "waves":
       return {
-        horizonColor: "#3B2F9E",
-        waveColor: "#6D5CE8",
-        crestColor: "#E5E0FF",
+        horizonColor: "#2A2170",
+        waveColor: "#4F7BFF",
+        crestColor: "#B9AEFF",
         speed: still ? 0 : 0.35,
         fogDepth: 20,
         grain: !still,
@@ -410,7 +411,7 @@ const systemDark = matchMedia("(prefers-color-scheme: dark)");
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   themeToggle.setAttribute("aria-pressed", String(theme === "dark"));
-  themeMeta.content = theme === "dark" ? "#14172b" : "#f6f7fa";
+  themeMeta.content = theme === "dark" ? "#05040c" : "#e9ecfb";
 }
 function savedTheme() {
   try {

@@ -1,3 +1,4 @@
+import { nationEmblem } from "./nationEmblems.js";
 import { elementIcon } from "./elementIcons.js";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
@@ -292,6 +293,20 @@ function render() {
   main.dataset.route = isHome ? "home" : "page";
   if (isHome) main.innerHTML = home();
   unmountIslands = mountIslands(main, islandProps);
+  if (part === parts[1]) {
+    main.querySelectorAll('.prose h3').forEach(heading => {
+      const id = heading.textContent.match(/^([34]-[1-5])\./)?.[1];
+      const url = nationEmblem(id);
+      if (!url) return;
+      const figure = document.createElement('figure');
+      figure.className = 'nation-prose-emblem';
+      const img = document.createElement('img');
+      img.src = url; img.alt = heading.textContent + ' 문장 초안';
+      img.width = 112; img.height = 112; img.loading = 'lazy';
+      const caption = document.createElement('figcaption'); caption.textContent = '문장 초안 · 국가명 가칭';
+      figure.append(img, caption); heading.after(figure);
+    });
+  }
   document.title = isHome
     ? "이그니아 코덱스"
     : `${section ? cleanText(section.title) : label} — 이그니아 코덱스`;

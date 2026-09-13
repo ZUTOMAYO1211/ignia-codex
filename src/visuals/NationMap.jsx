@@ -1,3 +1,4 @@
+import { nationEmblem } from "../nationEmblems.js";
 import { useState } from "react";
 import "./visuals.css";
 
@@ -94,6 +95,7 @@ export default function NationMap({ nations }) {
             >
               {tone === "hazard" && <circle cx={x} cy={y} r="22" className="nation-pulse" />}
               <circle cx={x} cy={y} r={tone === "order" || tone === "force" ? 15 : 11} className="nation-dot" />
+              {nationEmblem(n.id) && <image href={nationEmblem(n.id)} x={x - 21} y={y - 21} width="42" height="42" className="nation-emblem-node" aria-hidden="true" />}
               <text x={x} y={LABEL_ABOVE.has(n.id) ? y - 24 : y + 38}>{n.name}</text>
             </g>
           );
@@ -112,6 +114,7 @@ export default function NationMap({ nations }) {
       {current && (
         <div className="nation-detail" aria-live="polite">
           <p className="nation-detail-kind">{current.id.startsWith("3-") ? "모티브 국가" : current.id === "4-6" ? "비국가 지역" : "신규 세력"}</p>
+          {nationEmblem(current.id) && <figure className="nation-emblem-detail"><img src={nationEmblem(current.id)} alt={`${current.name} 문장 초안`} width="96" height="96" /><figcaption>문장 초안</figcaption></figure>}
           <h3>{current.name}</h3>
           {current.motto && <p className="nation-motto">{current.motto}</p>}
           {current.note && <p className="nation-note">{current.note}</p>}

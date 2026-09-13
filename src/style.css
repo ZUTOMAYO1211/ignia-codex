@@ -1555,3 +1555,11 @@ footer > a:hover {
 .wheel-icon{clip-path:inset(0 round 9px);pointer-events:none}
 .wheel-detail>.element-image{margin-bottom:14px}
 .mini-glyphs .element-image{width:36px;height:36px}
+
+.nation-emblem-node{clip-path:inset(0 round 7px);pointer-events:auto;cursor:pointer}
+.nation-node.is-selected .nation-emblem-node,.nation-node:focus-visible .nation-emblem-node{outline:3px solid #ffb591;outline-offset:2px}
+.nation-emblem-detail{margin:0 0 16px;display:flex;align-items:center;gap:14px}
+.nation-emblem-detail img,.nation-prose-emblem img{display:block;border-radius:12px;background:#fff;object-fit:contain}
+.nation-emblem-detail figcaption{font-size:12px;color:#d9d2ee}
+.nation-prose-emblem{margin:16px 0 22px;display:flex;align-items:center;gap:18px}
+.nation-prose-emblem figcaption{font-size:13px;color:var(--muted)}

@@ -113,7 +113,7 @@ const sectionHref = (partIndex, pattern) => {
   const section = part?.sections.find((s) => pattern.test(s.title));
   return articleLink(part?.id, section?.id);
 };
-const backgroundIslands = new Set(["waves", "galaxy", "topography", "threads", "particles"]);
+const backgroundIslands = new Set(["waves", "wavesDeep", "galaxy", "topography", "threads", "particles"]);
 const island = (name, className = "") =>
   `<div class="${className}" data-island="${name}"${backgroundIslands.has(name) ? ' aria-hidden="true"' : ""}></div>`;
 const sectionHead = (title, lede, href, action) =>
@@ -170,15 +170,17 @@ function chapterVisual(part, section) {
   return "";
 }
 
-// Every part opens on a void banner with its own moving background.
-const partBackgrounds = ["galaxy", "topography", "threads", "particles"];
+// Every part opens on a void banner with its own moving background. The world
+// setting part reuses the hero's waves in a darker tone.
+const partBackgrounds = ["wavesDeep", "topography", "threads", "particles"];
 
 function article(part, section) {
   const index = parts.indexOf(part);
   const content = section
     ? `${chapterVisual(part, section)}<article class="prose">${md(section.body)}</article>`
     : `<div class="prose part-intro">${md(part.intro)}</div>${part.sections.map((s) => `<section class="chapter" id="${s.id}"><h2><a href="${articleLink(part.id, s.id)}">${escape(s.title)}</a></h2>${chapterVisual(part, s)}<div class="prose">${md(s.body)}</div></section>`).join("")}`;
-  return `<header class="part-banner">${island(partBackgrounds[index] ?? "galaxy", "panel-bg")}<div class="part-banner-copy"><p class="glass-badge"><span>제${index + 1}부</span>${shortTitles[index]}</p><h1>${escape(section ? section.title.replace(/^\d+\. /, "") : shortTitles[index])}</h1><p>${descriptions[index]}</p></div></header><div class="reader-grid"><div class="reader-body">${content}<div class="reading-end"><a href="#${part.id}">제${index + 1}부 전체 읽기</a><a href="#home">홈으로</a></div></div><aside class="toc" aria-label="이 부의 목차"><span>제${index + 1}부 목차</span>${part.sections.map((s) => `<a ${s === section ? 'aria-current="page"' : ""} href="${articleLink(part.id, s.id)}">${escape(s.title.replace(/ \(.+\)/, ""))}</a>`).join("")}<div class="toc-note">🚧 표시는<br>아직 정하지 않은 항목</div></aside></div>`;
+  const background = partBackgrounds[index] ?? "galaxy";
+  return `<header class="part-banner is-${background}">${island(background, "panel-bg")}<div class="part-banner-copy"><p class="glass-badge"><span>제${index + 1}부</span>${shortTitles[index]}</p><h1>${escape(section ? section.title.replace(/^\d+\. /, "") : shortTitles[index])}</h1><p>${descriptions[index]}</p></div></header><div class="reader-grid"><div class="reader-body">${content}<div class="reading-end"><a href="#${part.id}">제${index + 1}부 전체 읽기</a><a href="#home">홈으로</a></div></div><aside class="toc" aria-label="이 부의 목차"><span>제${index + 1}부 목차</span>${part.sections.map((s) => `<a ${s === section ? 'aria-current="page"' : ""} href="${articleLink(part.id, s.id)}">${escape(s.title.replace(/ \(.+\)/, ""))}</a>`).join("")}<div class="toc-note">🚧 표시는<br>아직 정하지 않은 항목</div></aside></div>`;
 }
 
 function pendingPage() {
@@ -198,6 +200,17 @@ function islandProps(name) {
         crestColor: "#B9AEFF",
         speed: still ? 0 : 0.35,
         fogDepth: 20,
+        grain: !still,
+        mouseInteraction: !still,
+      };
+    case "wavesDeep":
+      return {
+        horizonColor: "#0E0B26",
+        waveColor: "#3454D1",
+        crestColor: "#8F80F5",
+        brightness: 0.9,
+        speed: still ? 0 : 0.3,
+        fogDepth: 26,
         grain: !still,
         mouseInteraction: !still,
       };

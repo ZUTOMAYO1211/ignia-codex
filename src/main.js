@@ -115,7 +115,7 @@ const sectionHref = (partIndex, pattern) => {
   const section = part?.sections.find((s) => pattern.test(s.title));
   return articleLink(part?.id, section?.id);
 };
-const backgroundIslands = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid", "glitch"]);
+const backgroundIslands = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid", "glitch", "silk"]);
 const island = (name, className = "") =>
   `<div class="${className}" data-island="${name}"${backgroundIslands.has(name) ? ' aria-hidden="true"' : ""}></div>`;
 const sectionHead = (title, lede, href, action) =>
@@ -222,6 +222,14 @@ function islandProps(name) {
         grain: false,
         maxDpr: 1,
       };
+    case "silk":
+      return {
+        color: "#3A338F",
+        speed: still ? 0 : 3,
+        scale: 1,
+        noiseIntensity: 1.2,
+        rotation: 0,
+      };
     case "glitch":
       return {
         glitchColors: ["#15123A", "#1F1A55", "#22358F", "#3F3494"],
@@ -305,10 +313,10 @@ function islandProps(name) {
 
 let unmountIslands = null;
 
-// The world setting part sits in a dark crystal corridor and the roleplay rules
-// part in scrambling letters behind every pane. A scene stays mounted while the
+// Behind every pane the world setting part has a dark crystal corridor, the
+// geography part slow indigo silk, and the roleplay rules part scrambling letters. A scene stays mounted while the
 // reader moves between the chapters of its part.
-const partScenes = ["acid", null, null, "glitch"];
+const partScenes = ["acid", "silk", null, "glitch"];
 const backdropScene = document.querySelector(".backdrop-scene");
 let sceneName = null;
 let unmountScene = null;

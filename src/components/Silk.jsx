@@ -1,6 +1,7 @@
 // React Bits Silk, moved from @react-three/fiber to ogl so the site does not
 // ship three.js for one full-screen plane. The shader, props, and timing
-// (uTime advances 0.1 per second) are the original's.
+// (uTime advances 0.1 per second) are the original's; the unused light mode
+// branch was removed.
 import { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
 import './Silk.css';
@@ -35,7 +36,6 @@ uniform float uSpeed;
 uniform float uScale;
 uniform float uRotation;
 uniform float uNoiseIntensity;
-uniform float uLightMode;
 
 const float e = 2.71828182845904523536;
 
@@ -68,23 +68,11 @@ void main() {
 
   float grain = rnd / 15.0 * uNoiseIntensity;
   vec3 result = uColor * pattern - vec3(grain);
-  if (uLightMode > 0.5) {
-    float fold = smoothstep(0.28, 0.9, pattern);
-    float specular = smoothstep(0.72, 0.98, pattern);
-    vec3 shadowColor = uColor * 0.72;
-    vec3 bodyColor = min(uColor * 1.18, vec3(1.0));
-    vec3 lightBase = mix(shadowColor, bodyColor, fold);
-    lightBase = mix(lightBase, vec3(1.0), specular * 0.92);
-    float fineNoise = noise(gl_FragCoord.xy * 0.63 + vec2(17.0, 41.0));
-    float grainSignal = (rnd + fineNoise - 1.0);
-    float grainStrength = clamp(uNoiseIntensity * 0.038, 0.0, 0.16);
-    result = lightBase + grainSignal * grainStrength;
-  }
   gl_FragColor = vec4(clamp(result, 0.0, 1.0), 1.0);
 }
 `;
 
-const Silk = ({ speed = 5, scale = 1, color = '#7B7481', noiseIntensity = 1.5, rotation = 0, lightMode = false }) => {
+const Silk = ({ speed = 5, scale = 1, color = '#7B7481', noiseIntensity = 1.5, rotation = 0 }) => {
   const containerRef = useRef(null);
   const programRef = useRef(null);
 
@@ -109,7 +97,6 @@ const Silk = ({ speed = 5, scale = 1, color = '#7B7481', noiseIntensity = 1.5, r
         uNoiseIntensity: { value: noiseIntensity },
         uColor: { value: hexToNormalizedRGB(color) },
         uRotation: { value: rotation },
-        uLightMode: { value: lightMode ? 1 : 0 },
         uTime: { value: 0 }
       }
     });
@@ -155,8 +142,7 @@ const Silk = ({ speed = 5, scale = 1, color = '#7B7481', noiseIntensity = 1.5, r
     u.uNoiseIntensity.value = noiseIntensity;
     u.uColor.value = hexToNormalizedRGB(color);
     u.uRotation.value = rotation;
-    u.uLightMode.value = lightMode ? 1 : 0;
-  }, [speed, scale, noiseIntensity, color, rotation, lightMode]);
+  }, [speed, scale, noiseIntensity, color, rotation]);
 
   return <div ref={containerRef} className="silk-container" />;
 };

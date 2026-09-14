@@ -1,7 +1,7 @@
 # 기본 속성 아이콘 시트 — 평면 스타일 수정본
 
 - 도구: OpenAI 내장 image_gen, 기존 시트 참조 편집
-- 파일: `public/assets/icons/ignia-elements-sheet-flat-v2.png`
+- 파일: `docs/assets/ignia-elements-sheet-flat-v2.png`
 - 기존 원본 보존. 웹사이트에는 아직 적용하지 않음.
 - 4열 × 2행: 화·수·풍·토 / 뢰·광·암·무
 

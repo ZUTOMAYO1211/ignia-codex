@@ -1,7 +1,7 @@
 # 세계관 콘셉트 아트
 
 - 생성 도구: OpenAI 내장 image_gen (CLI fallback 사용 안 함)
-- 파일: `public/assets/ignia-world.png`
+- 파일: `public/assets/ignia-world.webp` (원본 PNG를 WebP 품질 0.9로 변환)
 - 크기: 1672 × 941
 - 용도: 첫 화면의 이그니아 세계관 풍경. 확정된 지도나 지명 묘사가 아니다.
 - 생성 후 색상·구도 편집 없이 원본을 사용한다.

@@ -27,8 +27,6 @@ export default function HeroTitle({ title, lede, still }) {
       <p className="hero-lede">
         <DecryptedText
           text={lede}
-          animateOn="view"
-          sequential
           speed={28}
           characters={RUNES}
           encryptedClassName="hero-lede-rune"

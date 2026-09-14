@@ -41,7 +41,6 @@ uniform float uRepulsionStrength;
 uniform float uMouseActiveFactor;
 uniform float uAutoCenterRepulsion;
 uniform bool uTransparent;
-uniform float uLightMode;
 uniform float uTint;
 uniform vec3 uStarA;
 uniform vec3 uStarB;
@@ -175,12 +174,7 @@ void main() {
     col += StarLayer(uv * scale + i * 453.32) * fade;
   }
 
-  if (uLightMode > 0.5) {
-    float energy = max(max(col.r, col.g), col.b);
-    float coverage = clamp(smoothstep(0.0, 0.42, energy) * 0.92, 0.0, 0.92);
-    vec3 ink = clamp(col * 0.48, 0.0, 0.82);
-    gl_FragColor = vec4(mix(vec3(1.0), ink, coverage), 1.0);
-  } else if (uTransparent) {
+  if (uTransparent) {
     float alpha = length(col);
     alpha = smoothstep(0.0, 0.3, alpha);
     alpha = min(alpha, 1.0);
@@ -208,7 +202,6 @@ export default function Galaxy({
   rotationSpeed = 0.1,
   autoCenterRepulsion = 0,
   transparent = true,
-  lightMode = false,
   // Ignia: [halo A, halo B] hex colors and a core color; when set, they replace hueShift and saturation.
   starColors = null,
   coreColor = '#FFFFFF',
@@ -229,9 +222,7 @@ export default function Galaxy({
     });
     const gl = renderer.gl;
 
-    if (lightMode) {
-      gl.clearColor(1, 1, 1, 1);
-    } else if (transparent) {
+    if (transparent) {
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.clearColor(0, 0, 0, 0);
@@ -282,7 +273,6 @@ export default function Galaxy({
         uMouseActiveFactor: { value: 0.0 },
         uAutoCenterRepulsion: { value: autoCenterRepulsion },
         uTransparent: { value: transparent },
-        uLightMode: { value: lightMode ? 1 : 0 },
         uTint: { value: starColors ? 1 : 0 },
         uStarA: { value: new Float32Array(hexToRgb(starColors?.[0] ?? '#FFFFFF')) },
         uStarB: { value: new Float32Array(hexToRgb(starColors?.[1] ?? starColors?.[0] ?? '#FFFFFF')) },
@@ -359,7 +349,6 @@ export default function Galaxy({
     repulsionStrength,
     autoCenterRepulsion,
     transparent,
-    lightMode,
     starColors,
     coreColor
   ]);

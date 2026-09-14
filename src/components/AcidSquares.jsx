@@ -1,7 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { Renderer, Program, Mesh, Triangle, RenderTarget } from 'ogl';
+import { Renderer, Program, Mesh, Triangle } from 'ogl';
 import './AcidSquares.css';
 
+// React Bits AcidSquares trimmed to what the world setting backdrop uses. The
+// blur post-process, pointer dent, film grain, and light mode were removed;
+// maxDpr is an added cap on the canvas pixel ratio for a full-page backdrop.
 const hexToRgb = hex => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) return [1, 1, 1];
@@ -9,7 +12,6 @@ const hexToRgb = hex => {
 };
 
 const DETAIL_STEPS = { low: 20, medium: 32, high: 48 };
-const stepsFor = detail => DETAIL_STEPS[detail] || DETAIL_STEPS.medium;
 
 const vertex = `#version 300 es
 in vec2 position;
@@ -38,27 +40,12 @@ uniform float uSteps;
 uniform vec3 uColor1;
 uniform vec3 uColor2;
 uniform vec3 uColor3;
-uniform vec2 uMouse;
-uniform float uMouseStrength;
-uniform float uMouseRadius;
-uniform float uEnableMouse;
-uniform float uMouseActive;
-uniform float uGrain;
-uniform float uGrainIntensity;
-uniform float uLightMode;
 out vec4 fragColor;
 
 void main() {
-  vec2 frag = gl_FragCoord.xy;
   float zoom = max(uZoom, 0.05);
-  float aspect = iResolution.x / iResolution.y;
-  vec2 ndc = (2.0 * frag - iResolution.xy) / iResolution.y;
+  vec2 ndc = (2.0 * gl_FragCoord.xy - iResolution.xy) / iResolution.y;
   vec2 dir = ndc * (0.5 / zoom);
-
-  vec2 mouseNdc = vec2(uMouse.x * aspect, uMouse.y);
-  float mr = max(uMouseRadius, 0.01);
-  vec2 md = ndc - mouseNdc;
-  float dent = exp(-dot(md, md) / (mr * mr)) * (3.0 * uMouseStrength * uEnableMouse * uMouseActive);
 
   float travel = sin(iTime * uSpeed) * uWaveDepth;
   float density = max(uDensity, 1.0);
@@ -66,7 +53,7 @@ void main() {
   float stepSize = max(uStepSize, 0.0005);
   float glowGain = max(uGlow, 0.0);
 
-  vec3 tOffset = vec3(0.0, dent, travel);
+  vec3 tOffset = vec3(0.0, 0.0, travel);
   vec3 p = vec3(0.0);
   float s = 0.0;
   float glow = 0.0;
@@ -90,57 +77,9 @@ void main() {
   col *= v;
 
   float a = clamp(v, 0.0, 1.0) * uOpacity;
-  vec3 outRgb = col * a;
-  if (uGrain > 0.5) {
-    float gv = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233)) + iTime) * 43758.5453) - 0.5) * uGrainIntensity;
-    outRgb = clamp(outRgb + gv, 0.0, 1.0);
-    a = clamp(a + gv, 0.0, 1.0);
-  }
-  if (uLightMode > 0.5) {
-    float peak = max(col.r, max(col.g, col.b));
-    vec3 chroma = pow(clamp(col / max(peak, 0.0001), 0.0, 1.0), vec3(1.16));
-    fragColor = vec4(mix(vec3(1.0), chroma, a * 0.94), 1.0);
-  } else {
-    fragColor = vec4(outRgb, a);
-  }
+  fragColor = vec4(col * a, a);
 }
 `;
-
-const postFragment = `#version 300 es
-precision highp float;
-uniform sampler2D tMap;
-uniform vec2 iResolution;
-uniform vec2 uDirection;
-uniform float uRadius;
-uniform float uGrain;
-uniform float uGrainIntensity;
-uniform float iTime;
-out vec4 fragColor;
-
-vec4 samp(vec2 uv) {
-  return texture(tMap, uv);
-}
-
-void main() {
-  vec2 uv = gl_FragCoord.xy / iResolution;
-  vec2 texel = uDirection / iResolution;
-  float st = uRadius * 0.25;
-  vec4 sum = samp(uv) * 0.2026;
-  sum += (samp(uv + texel * st) + samp(uv - texel * st)) * 0.179;
-  sum += (samp(uv + texel * (st * 2.0)) + samp(uv - texel * (st * 2.0))) * 0.124;
-  sum += (samp(uv + texel * (st * 3.0)) + samp(uv - texel * (st * 3.0))) * 0.0672;
-  sum += (samp(uv + texel * (st * 4.0)) + samp(uv - texel * (st * 4.0))) * 0.0285;
-  vec4 col = sum;
-  if (uGrain > 0.5) {
-    float gv = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233)) + iTime) * 43758.5453) - 0.5) * uGrainIntensity;
-    col.rgb = clamp(col.rgb + gv, 0.0, 1.0);
-    col.a = clamp(col.a + gv, 0.0, 1.0);
-  }
-  fragColor = col;
-}
-`;
-
-const ctxMap = new WeakMap();
 
 const AcidSquares = ({
   color1 = '#5227FF',
@@ -159,27 +98,11 @@ const AcidSquares = ({
   contrast = 1,
   brightness = 1.0,
   opacity = 1.0,
-  mouseInteraction = true,
-  mouseStrength = 0.1,
-  mouseRadius = 0.35,
-  blur = 0,
-  grain = true,
-  grainIntensity = 0.05,
-  lightMode = false,
-  // Ignia: caps the canvas pixel ratio so a full-page backdrop stays light.
   maxDpr = 2,
   className = ''
 }) => {
   const containerRef = useRef(null);
-  const mouseTarget = useRef([0, 0]);
-  const mouseCurrent = useRef([0, 0]);
-  const enableMouseRef = useRef(mouseInteraction);
-  const mouseStrengthRef = useRef(mouseStrength);
-  const mouseActive = useRef(0);
-  const mouseActiveTarget = useRef(0);
-  const blurRef = useRef(blur);
-  const grainRef = useRef(grain);
-  const grainIntensityRef = useRef(grainIntensity);
+  const programRef = useRef(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -192,7 +115,6 @@ const AcidSquares = ({
       antialias: false,
       dpr: Math.min(window.devicePixelRatio || 1, maxDpr)
     });
-
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
     const canvas = gl.canvas;
@@ -201,160 +123,53 @@ const AcidSquares = ({
     canvas.style.display = 'block';
     container.appendChild(canvas);
 
-    const geometry = new Triangle(gl);
     const program = new Program(gl, {
       vertex,
       fragment,
       uniforms: {
         iTime: { value: 0 },
         iResolution: { value: new Float32Array([1, 1]) },
-        uSpeed: { value: 0.7 },
-        uWaveDepth: { value: 1 },
-        uZoom: { value: 1.3 },
-        uDensity: { value: 10.0 },
-        uSpread: { value: 0.3 },
-        uStepSize: { value: 0.002 },
-        uGlow: { value: 1.0 },
-        uExposure: { value: 2700 },
+        uSpeed: { value: 0 },
+        uWaveDepth: { value: 0 },
+        uZoom: { value: 1 },
+        uDensity: { value: 1 },
+        uSpread: { value: 0 },
+        uStepSize: { value: 0 },
+        uGlow: { value: 0 },
+        uExposure: { value: 1 },
         uColorShift: { value: 0 },
         uContrast: { value: 1 },
-        uBrightness: { value: 1.0 },
-        uOpacity: { value: 1.0 },
+        uBrightness: { value: 1 },
+        uOpacity: { value: 1 },
         uSteps: { value: 32 },
-        uColor1: { value: new Float32Array([1, 1, 1]) },
-        uColor2: { value: new Float32Array([1, 1, 1]) },
-        uColor3: { value: new Float32Array([1, 1, 1]) },
-        uMouse: { value: new Float32Array([0, 0]) },
-        uMouseStrength: { value: 0.1 },
-        uMouseRadius: { value: 0.35 },
-        uEnableMouse: { value: 1.0 },
-        uMouseActive: { value: 0.0 },
-        uGrain: { value: 1.0 },
-        uGrainIntensity: { value: 0.05 },
-        uLightMode: { value: 0.0 }
+        uColor1: { value: new Float32Array(3) },
+        uColor2: { value: new Float32Array(3) },
+        uColor3: { value: new Float32Array(3) }
       }
     });
-
-    const mesh = new Mesh(gl, { geometry, program });
-
-    const postProgram = new Program(gl, {
-      vertex,
-      fragment: postFragment,
-      uniforms: {
-        tMap: { value: null },
-        iResolution: { value: new Float32Array([1, 1]) },
-        uDirection: { value: new Float32Array([1, 0]) },
-        uRadius: { value: 0 },
-        uGrain: { value: 0 },
-        uGrainIntensity: { value: 0.05 },
-        iTime: { value: 0 }
-      }
-    });
-    const postMesh = new Mesh(gl, { geometry, program: postProgram });
-
-    let rtA = null;
-    let rtB = null;
-    const ensureTargets = () => {
-      if (!rtA) {
-        const bw = gl.drawingBufferWidth;
-        const bh = gl.drawingBufferHeight;
-        rtA = new RenderTarget(gl, { width: bw, height: bh, depth: false });
-        rtB = new RenderTarget(gl, { width: bw, height: bh, depth: false });
-      }
-    };
-
-    const renderFrame = () => {
-      const grainOn = grainRef.current ? 1.0 : 0.0;
-      const grainAmt = grainIntensityRef.current;
-      program.uniforms.uGrainIntensity.value = grainAmt;
-      postProgram.uniforms.uGrainIntensity.value = grainAmt;
-      if (blurRef.current > 0) {
-        ensureTargets();
-        program.uniforms.uGrain.value = 0.0;
-        renderer.render({ scene: mesh, target: rtA });
-        const pu = postProgram.uniforms;
-        pu.uRadius.value = blurRef.current * 14.0;
-        pu.tMap.value = rtA.texture;
-        pu.uDirection.value[0] = 1;
-        pu.uDirection.value[1] = 0;
-        pu.uGrain.value = 0.0;
-        renderer.render({ scene: postMesh, target: rtB });
-        pu.tMap.value = rtB.texture;
-        pu.uDirection.value[0] = 0;
-        pu.uDirection.value[1] = 1;
-        pu.uGrain.value = grainOn;
-        renderer.render({ scene: postMesh });
-      } else {
-        program.uniforms.uGrain.value = grainOn;
-        renderer.render({ scene: mesh });
-      }
-    };
-
-    ctxMap.set(container, { renderer, program, mesh });
+    programRef.current = program;
+    const mesh = new Mesh(gl, { geometry: new Triangle(gl), program });
 
     const setSize = () => {
       const rect = container.getBoundingClientRect();
-      const w = Math.max(1, Math.floor(rect.width));
-      const h = Math.max(1, Math.floor(rect.height));
-      renderer.setSize(w, h);
-      const bw = gl.drawingBufferWidth;
-      const bh = gl.drawingBufferHeight;
-      const res = program.uniforms.iResolution.value;
-      res[0] = bw;
-      res[1] = bh;
-      const pres = postProgram.uniforms.iResolution.value;
-      pres[0] = bw;
-      pres[1] = bh;
-      if (rtA) {
-        rtA.setSize(bw, bh);
-        rtB.setSize(bw, bh);
-      }
-      renderFrame();
+      renderer.setSize(Math.max(1, Math.floor(rect.width)), Math.max(1, Math.floor(rect.height)));
+      program.uniforms.iResolution.value[0] = gl.drawingBufferWidth;
+      program.uniforms.iResolution.value[1] = gl.drawingBufferHeight;
+      renderer.render({ scene: mesh });
     };
-
     const ro = new ResizeObserver(setSize);
     ro.observe(container);
     setSize();
-
-    const handleMouseMove = e => {
-      const rect = container.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2.0;
-      const y = -((e.clientY - rect.top) / rect.height - 0.5) * 2.0;
-      mouseTarget.current = [x, y];
-      mouseActiveTarget.current = 1;
-    };
-    const handleMouseLeave = () => {
-      mouseActiveTarget.current = 0;
-    };
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('mouseleave', handleMouseLeave);
 
     let raf = 0;
     let isVisible = true;
     let isPageVisible = !document.hidden;
     const t0 = performance.now();
-
     const loop = t => {
       program.uniforms.iTime.value = (t - t0) * 0.001;
-
-      const cur = mouseCurrent.current;
-      const tgt = mouseTarget.current;
-      cur[0] += 0.05 * (tgt[0] - cur[0]);
-      cur[1] += 0.05 * (tgt[1] - cur[1]);
-      const m = program.uniforms.uMouse.value;
-      m[0] = cur[0];
-      m[1] = cur[1];
-      const activeTarget = enableMouseRef.current ? mouseActiveTarget.current : 0;
-      mouseActive.current += 0.05 * (activeTarget - mouseActive.current);
-      program.uniforms.uMouseActive.value = mouseActive.current;
-      program.uniforms.uEnableMouse.value = enableMouseRef.current ? 1.0 : 0.0;
-      program.uniforms.uMouseStrength.value = mouseStrengthRef.current;
-
-      postProgram.uniforms.iTime.value = program.uniforms.iTime.value;
-      renderFrame();
+      renderer.render({ scene: mesh });
       raf = requestAnimationFrame(loop);
     };
-
     const tryStart = () => {
       if (isVisible && isPageVisible && raf === 0) raf = requestAnimationFrame(loop);
     };
@@ -364,22 +179,16 @@ const AcidSquares = ({
         raf = 0;
       }
     };
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting;
-        isVisible ? tryStart() : tryStop();
-      },
-      { threshold: 0 }
-    );
+    const io = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      isVisible ? tryStart() : tryStop();
+    });
     io.observe(container);
-
     const onVisibility = () => {
       isPageVisible = !document.hidden;
       isPageVisible ? tryStart() : tryStop();
     };
     document.addEventListener('visibilitychange', onVisibility);
-
     tryStart();
 
     return () => {
@@ -387,30 +196,18 @@ const AcidSquares = ({
       ro.disconnect();
       io.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
-      container.removeEventListener('mousemove', handleMouseMove);
-      container.removeEventListener('mouseleave', handleMouseLeave);
-      ctxMap.delete(container);
-      if (rtA) {
-        gl.deleteFramebuffer(rtA.buffer);
-        gl.deleteFramebuffer(rtB.buffer);
-        rtA.textures.forEach(tex => gl.deleteTexture(tex.texture));
-        rtB.textures.forEach(tex => gl.deleteTexture(tex.texture));
-      }
+      programRef.current = null;
       try {
         container.removeChild(canvas);
       } catch {}
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const ctx = ctxMap.get(container);
-    if (!ctx) return;
-    const { program } = ctx;
-    const u = program.uniforms;
-
+    const u = programRef.current?.uniforms;
+    if (!u) return;
     u.uSpeed.value = speed;
     u.uWaveDepth.value = waveDepth;
     u.uZoom.value = zoom;
@@ -423,55 +220,11 @@ const AcidSquares = ({
     u.uContrast.value = contrast;
     u.uBrightness.value = brightness;
     u.uOpacity.value = opacity;
-    u.uLightMode.value = lightMode ? 1.0 : 0.0;
-    u.uSteps.value = stepsFor(detail);
-    u.uMouseRadius.value = mouseRadius;
-    const c1 = hexToRgb(color1);
-    const a1 = u.uColor1.value;
-    a1[0] = c1[0];
-    a1[1] = c1[1];
-    a1[2] = c1[2];
-    const c2 = hexToRgb(color2);
-    const a2 = u.uColor2.value;
-    a2[0] = c2[0];
-    a2[1] = c2[1];
-    a2[2] = c2[2];
-    const c3 = hexToRgb(color3);
-    const a3 = u.uColor3.value;
-    a3[0] = c3[0];
-    a3[1] = c3[1];
-    a3[2] = c3[2];
-
-    enableMouseRef.current = mouseInteraction;
-    mouseStrengthRef.current = mouseStrength;
-    blurRef.current = blur;
-    grainRef.current = grain;
-    grainIntensityRef.current = grainIntensity;
-  }, [
-    color1,
-    color2,
-    color3,
-    detail,
-    speed,
-    waveDepth,
-    zoom,
-    density,
-    glow,
-    exposure,
-    spread,
-    stepSize,
-    colorShift,
-    contrast,
-    brightness,
-    opacity,
-    mouseInteraction,
-    mouseStrength,
-    mouseRadius,
-    blur,
-    grain,
-    grainIntensity,
-    lightMode
-  ]);
+    u.uSteps.value = DETAIL_STEPS[detail] || DETAIL_STEPS.medium;
+    u.uColor1.value.set(hexToRgb(color1));
+    u.uColor2.value.set(hexToRgb(color2));
+    u.uColor3.value.set(hexToRgb(color3));
+  }, [color1, color2, color3, detail, speed, waveDepth, zoom, density, glow, exposure, spread, stepSize, colorShift, contrast, brightness, opacity]);
 
   return <div ref={containerRef} className={`acid-squares-container ${className}`.trim()} />;
 };

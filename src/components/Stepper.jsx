@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'motion/react';
 
 import './Stepper.css';
 
+// React Bits Stepper. The codex always draws its own step buttons through
+// renderStepIndicator, so the built-in indicator and check icon were removed;
+// completeButtonText is an added option for the last button.
 export default function Stepper({
   children,
   initialStep = 1,
@@ -17,7 +20,6 @@ export default function Stepper({
   backButtonText = 'Back',
   nextButtonText = 'Continue',
   completeButtonText = 'Complete',
-  disableStepIndicators = false,
   renderStepIndicator,
   ...rest
 }) {
@@ -68,26 +70,14 @@ export default function Stepper({
             const isNotLastStep = index < totalSteps - 1;
             return (
               <React.Fragment key={stepNumber}>
-                {renderStepIndicator ? (
-                  renderStepIndicator({
-                    step: stepNumber,
-                    currentStep,
-                    onStepClick: clicked => {
-                      setDirection(clicked > currentStep ? 1 : -1);
-                      updateStep(clicked);
-                    }
-                  })
-                ) : (
-                  <StepIndicator
-                    step={stepNumber}
-                    disableStepIndicators={disableStepIndicators}
-                    currentStep={currentStep}
-                    onClickStep={clicked => {
-                      setDirection(clicked > currentStep ? 1 : -1);
-                      updateStep(clicked);
-                    }}
-                  />
-                )}
+                {renderStepIndicator({
+                  step: stepNumber,
+                  currentStep,
+                  onStepClick: clicked => {
+                    setDirection(clicked > currentStep ? 1 : -1);
+                    updateStep(clicked);
+                  }
+                })}
                 {isNotLastStep && <StepConnector isComplete={currentStep > stepNumber} />}
               </React.Fragment>
             );
@@ -107,11 +97,7 @@ export default function Stepper({
           <div className={`footer-container ${footerClassName}`}>
             <div className={`footer-nav ${currentStep !== 1 ? 'spread' : 'end'}`}>
               {currentStep !== 1 && (
-                <button
-                  onClick={handleBack}
-                  className={`back-button ${currentStep === 1 ? 'inactive' : ''}`}
-                  {...backButtonProps}
-                >
+                <button onClick={handleBack} className="back-button" {...backButtonProps}>
                   {backButtonText}
                 </button>
               )}
@@ -189,36 +175,6 @@ export function Step({ children }) {
   return <div className="step-default">{children}</div>;
 }
 
-function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators }) {
-  const status = currentStep === step ? 'active' : currentStep < step ? 'inactive' : 'complete';
-
-  const handleClick = () => {
-    if (step !== currentStep && !disableStepIndicators) onClickStep(step);
-  };
-
-  return (
-    <motion.div onClick={handleClick} className="step-indicator" style={disableStepIndicators ? { pointerEvents: 'none', opacity: 0.5 } : {}} animate={status} initial={false}>
-      <motion.div
-        variants={{
-          inactive: { scale: 1, backgroundColor: '#222', color: '#a3a3a3' },
-          active: { scale: 1, backgroundColor: '#5227FF', color: '#5227FF' },
-          complete: { scale: 1, backgroundColor: '#5227FF', color: '#3b82f6' }
-        }}
-        transition={{ duration: 0.3 }}
-        className="step-indicator-inner"
-      >
-        {status === 'complete' ? (
-          <CheckIcon className="check-icon" />
-        ) : status === 'active' ? (
-          <div className="active-dot" />
-        ) : (
-          <span className="step-number">{step}</span>
-        )}
-      </motion.div>
-    </motion.div>
-  );
-}
-
 function StepConnector({ isComplete }) {
   const lineVariants = {
     incomplete: { width: 0, backgroundColor: 'transparent' },
@@ -235,20 +191,5 @@ function StepConnector({ isComplete }) {
         transition={{ duration: 0.4 }}
       />
     </div>
-  );
-}
-
-function CheckIcon(props) {
-  return (
-    <svg {...props} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-      <motion.path
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ delay: 0.1, type: 'tween', ease: 'easeOut', duration: 0.3 }}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M5 13l4 4L19 7"
-      />
-    </svg>
   );
 }

@@ -1,6 +1,6 @@
 # 기본 속성 아이콘 시트
 
-- 파일: `public/assets/icons/ignia-elements-sheet.png`
+- 파일: `docs/assets/ignia-elements-sheet.png`
 - 생성: OpenAI 내장 image_gen
 - 배열: 4열 × 2행, 흰 배경
 - 첫 행: 화 / 수 / 풍 / 토

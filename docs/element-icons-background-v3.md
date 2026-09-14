@@ -1,7 +1,7 @@
 # 단색 아이콘 + 속성별 배경 시트
 
 - 도구: OpenAI 내장 image_gen, v2 시트 참조 편집
-- 파일: `public/assets/icons/ignia-elements-sheet-background-v3.png`
+- 파일: `docs/assets/ignia-elements-sheet-background-v3.png`
 - 배열: 화·수·풍·토 / 뢰·광·암·무
 - 아이콘은 짙은 무채색으로 통일하고 속성별 색상은 배경 타일에 적용했다.
 - 기존 시트를 보존하며 웹사이트 적용은 포함하지 않는다.

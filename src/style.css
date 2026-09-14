@@ -117,9 +117,6 @@
 :root[data-theme="dark"] .element {
   color: color-mix(in srgb, var(--element) 45%, white);
 }
-:root[data-theme="dark"] .element-glyph {
-  background: color-mix(in srgb, var(--element) 30%, var(--panel));
-}
 * {
   box-sizing: border-box;
 }
@@ -129,8 +126,7 @@ body {
   -webkit-user-select: none;
   user-select: none;
 }
-input,
-textarea {
+input {
   -webkit-user-select: text;
   user-select: text;
 }
@@ -663,15 +659,6 @@ main[data-route="home"] {
 .element:last-child {
   border: 0;
 }
-.element-glyph {
-  font-size: 24px;
-  width: 43px;
-  height: 43px;
-  display: grid;
-  place-items: center;
-  background: color-mix(in srgb, var(--element) 9%, white);
-  border-radius: 12px;
-}
 .element strong {
   font-size: 12px;
   font-weight: 600;
@@ -896,10 +883,6 @@ main > .prose > :not(.table-scroll):not(pre) {
   font-size: 25px;
   line-height: 1.65;
   color: var(--ink);
-}
-.chapter > h2 span {
-  font-size: 16px;
-  color: var(--accent-text);
 }
 .part-intro {
   margin-bottom: 8px;
@@ -1140,7 +1123,7 @@ dialog::backdrop {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: url("/assets/ignia-world.png") 70% center / cover;
+  background: url("/assets/ignia-world.webp") 70% center / cover;
 }
 .stage-card::before {
   content: "";
@@ -1430,7 +1413,6 @@ footer > a:hover {
   }
 }
 @media (max-width: 1200px) {
-  .brand small,
   .search-trigger kbd {
     display: none;
   }
@@ -1827,8 +1809,7 @@ footer > a:hover {
   line-height: 1.8;
   color: rgb(229 224 255 / 0.82);
 }
-.nations-panel a:focus-visible,
-.part-banner a:focus-visible {
+.nations-panel a:focus-visible {
   outline-color: #fff;
 }
 @media (max-width: 960px) {

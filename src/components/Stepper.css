@@ -79,11 +79,6 @@
   color: #52525b;
 }
 
-.back-button.inactive {
-  pointer-events: none;
-  opacity: 0.5;
-  color: #a3a3a3;
-}
 
 .next-button {
   transition: all 350ms;
@@ -107,32 +102,9 @@
   background-color: #5227ff;
 }
 
-.step-indicator {
-  position: relative;
-  cursor: pointer;
-  outline: none;
-}
 
-.step-indicator-inner {
-  display: flex;
-  height: 2rem;
-  width: 2rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  font-weight: 600;
-}
 
-.active-dot {
-  height: 0.75rem;
-  width: 0.75rem;
-  border-radius: 9999px;
-  background-color: #fff;
-}
 
-.step-number {
-  font-size: 0.875rem;
-}
 
 .step-connector {
   position: relative;
@@ -152,8 +124,3 @@
   height: 100%;
 }
 
-.check-icon {
-  height: 1rem;
-  width: 1rem;
-  color: #fff;
-}

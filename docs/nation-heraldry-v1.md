@@ -1,6 +1,6 @@
 # 국가 문장 초안 v1
 
-OpenAI 내장 image_gen으로 만든 제안이며 확정 설정이 아니다. 웹사이트의 세력 관계도·국가 상세·제2부 국가 소개에 초안 표시와 함께 적용했다. 원본: `public/assets/heraldry/ignia-nations-draft-v1.png`.
+OpenAI 내장 image_gen으로 만든 제안이며 확정 설정이 아니다. 웹사이트의 세력 관계도·국가 상세·제2부 국가 소개에 초안 표시와 함께 적용했다. 원본: `docs/assets/ignia-nations-draft-v1.png`.
 
 3열 × 3행, 왼쪽부터:
 

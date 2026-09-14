@@ -1,8 +1,5 @@
 /* Visual islands share the site tokens so light and dark mode follow the page.
    Reference visuals are frosted glass; the nation map sits on smoked void glass. */
-.visual-card {
-  --vc-glow: rgba(143, 128, 245, 0.3);
-}
 
 /* Part tiles */
 .part-tiles {
@@ -71,15 +68,6 @@
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   gap: 4px;
-}
-.mini-glyphs span {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1;
-  font-size: 13px;
-  color: var(--el-ink, var(--el));
-  background: color-mix(in srgb, var(--el) 14%, var(--panel));
-  border-radius: 7px;
 }
 .mini-dots {
   display: flex;
@@ -295,16 +283,6 @@
 .wheel-dot.is-core {
   stroke-dasharray: 4 4;
 }
-.wheel-glyph {
-  font-size: 30px;
-  font-weight: 700;
-  text-anchor: middle;
-  fill: var(--el-ink);
-  pointer-events: none;
-}
-.wheel-glyph.is-core {
-  font-size: 34px;
-}
 .wheel-name {
   font-size: 20px;
   font-weight: 700;
@@ -322,10 +300,6 @@
   fill: var(--el);
   stroke-width: 4;
 }
-.wheel-node.is-active .wheel-glyph,
-.wheel-node:focus-visible .wheel-glyph {
-  fill: #fff;
-}
 .wheel-detail h3 {
   margin: 0 0 8px;
   font-size: 24px;
@@ -336,18 +310,6 @@
   font-size: 14px;
   line-height: 1.8;
   color: var(--muted);
-}
-.wheel-detail-glyph {
-  display: grid;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  margin: 0 0 14px !important;
-  font-size: 32px !important;
-  font-weight: 700;
-  color: #fff !important;
-  background: var(--el);
-  border-radius: 18px;
 }
 .wheel-fusions {
   display: grid;
@@ -397,8 +359,7 @@
   border: 1px solid var(--glass-edge);
   border-radius: 99px;
 }
-:root[data-theme="dark"] .wheel-node,
-:root[data-theme="dark"] .mini-glyphs span {
+:root[data-theme="dark"] .wheel-node {
   --el-ink: color-mix(in srgb, var(--el) 45%, white);
 }
 

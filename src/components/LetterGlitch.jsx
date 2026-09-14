@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 
+// React Bits LetterGlitch without its unused light mode.
 const FALLBACK_RGB = { r: 255, g: 255, b: 255 };
 
 const LetterGlitch = ({
@@ -9,7 +10,6 @@ const LetterGlitch = ({
   centerVignette = false,
   outerVignette = true,
   smooth = true,
-  lightMode = false,
   backgroundColor,
   characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789'
 }) => {
@@ -215,7 +215,7 @@ const LetterGlitch = ({
     position: 'relative',
     width: '100%',
     height: '100%',
-    backgroundColor: backgroundColor || (lightMode ? '#ffffff' : '#000000'),
+    backgroundColor: backgroundColor || '#000000',
     overflow: 'hidden'
   };
 
@@ -232,9 +232,7 @@ const LetterGlitch = ({
     width: '100%',
     height: '100%',
     pointerEvents: 'none',
-    background: lightMode
-      ? 'radial-gradient(circle, rgba(255,255,255,0) 58%, rgba(255,255,255,0.96) 100%)'
-      : 'radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,1) 100%)'
+    background: 'radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,1) 100%)'
   };
 
   const centerVignetteStyle = {
@@ -244,9 +242,7 @@ const LetterGlitch = ({
     width: '100%',
     height: '100%',
     pointerEvents: 'none',
-    background: lightMode
-      ? 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 60%)'
-      : 'radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)'
+    background: 'radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)'
   };
 
   return (

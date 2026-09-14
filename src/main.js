@@ -1,7 +1,6 @@
 import { nationEmblem } from "./nationEmblems.js";
 import { elementIcon } from "./elementIcons.js";
 import { marked } from "marked";
-import DOMPurify from "dompurify";
 import raw from "../이그니아_통합문서.md?raw";
 import {
   parseCodex,
@@ -18,7 +17,7 @@ import {
   getCodexStats,
 } from "./content.js";
 import { mountIslands } from "./islandManager.js";
-import { topic } from "./visuals/palette.js";
+import { elementColor, topic } from "./visuals/palette.js";
 import "./style.css";
 
 const parts = parseCodex(raw);
@@ -55,7 +54,8 @@ const escape = (value) =>
         c
       ],
   );
-const md = (value) => DOMPurify.sanitize(marked.parse(value));
+// The source document is the only Markdown the site renders and it has no raw HTML.
+const md = (value) => marked.parse(value);
 // The codex seal: the outer rings are the void around every world, the eight
 // small crystals are the basic attributes, and the split crystal stacks the
 // celestial realm (open), the material realm (crystal blue), and the demon realm (solid).
@@ -97,17 +97,8 @@ const main = document.querySelector("#main");
 
 function elementsDiagram() {
   const rows = getTable(parts[0].sections[2].body, "### 3-2.");
-  const colors = [
-    "#a53d20",
-    "#245f9f",
-    "#326347",
-    "#79532f",
-    "#6942a8",
-    "#806314",
-    "#494d83",
-    "#505865",
-  ];
-  return `<div class="element-grid">${rows.map((r, i) => `<div class="element" style="--element:${colors[i]}"><img class="element-image" src="${elementIcon(["火", "水", "風", "土", "雷", "光", "暗", "無"][i])}" alt="" width="64" height="64" /><span>${escape(cleanText(r[0]).replace(" 마법", ""))}</span><span class="evolution-line" aria-hidden="true">↓</span><strong>${escape(cleanText(r[1]).split(" — ")[0])}</strong></div>`).join("")}</div><p class="diagram-caption">숙련도가 일정 수준에 이르면 상위 마법으로 진화하지만 무(無)는 진화하지 않는다</p>`;
+  const glyphs = ["火", "水", "風", "土", "雷", "光", "暗", "無"];
+  return `<div class="element-grid">${rows.map((r, i) => `<div class="element" style="--element:${elementColor(glyphs[i])}"><img class="element-image" src="${elementIcon(glyphs[i])}" alt="" width="64" height="64" /><span>${escape(cleanText(r[0]).replace(" 마법", ""))}</span><span class="evolution-line" aria-hidden="true">↓</span><strong>${escape(cleanText(r[1]).split(" — ")[0])}</strong></div>`).join("")}</div><p class="diagram-caption">숙련도가 일정 수준에 이르면 상위 마법으로 진화하지만 무(無)는 진화하지 않는다</p>`;
 }
 
 const sectionHref = (partIndex, pattern) => {
@@ -314,8 +305,8 @@ function islandProps(name) {
 let unmountIslands = null;
 
 // Behind every pane the world setting part has a dark crystal corridor, the
-// geography part slow indigo silk, and the roleplay rules part scrambling letters. A scene stays mounted while the
-// reader moves between the chapters of its part.
+// geography part slow indigo silk, and the roleplay rules part scrambling
+// letters. A scene stays mounted while the reader moves between its chapters.
 const partScenes = ["acid", "silk", null, "glitch"];
 const backdropScene = document.querySelector(".backdrop-scene");
 let sceneName = null;
@@ -352,18 +343,15 @@ function render() {
   main.dataset.route = isHome ? "home" : "page";
   if (isHome) main.innerHTML = home();
   unmountIslands = mountIslands(main, islandProps);
+  // Nation headings in the geography part show their draft emblem.
   if (part === parts[1]) {
-    main.querySelectorAll('.prose h3').forEach(heading => {
-      const id = heading.textContent.match(/^([34]-[1-5])\./)?.[1];
-      const url = nationEmblem(id);
+    main.querySelectorAll(".prose h3").forEach((heading) => {
+      const url = nationEmblem(heading.textContent.match(/^([34]-[1-5])\./)?.[1]);
       if (!url) return;
-      const figure = document.createElement('figure');
-      figure.className = 'nation-prose-emblem';
-      const img = document.createElement('img');
-      img.src = url; img.alt = heading.textContent + ' 문장 초안';
-      img.width = 112; img.height = 112; img.loading = 'lazy';
-      const caption = document.createElement('figcaption'); caption.textContent = '문장 초안 · 국가명 가칭';
-      figure.append(img, caption); heading.after(figure);
+      heading.insertAdjacentHTML(
+        "afterend",
+        `<figure class="nation-prose-emblem"><img src="${url}" alt="${escape(heading.textContent)} 문장 초안" width="112" height="112" loading="lazy" /><figcaption>문장 초안 · 국가명 가칭</figcaption></figure>`,
+      );
     });
   }
   document.title = isHome
@@ -491,7 +479,7 @@ systemDark.addEventListener("change", (e) => {
 });
 // Nothing on the page can be dragged; the search field keeps normal text dragging.
 document.addEventListener("dragstart", (e) => {
-  if (!e.target.closest?.("input, textarea")) e.preventDefault();
+  if (!e.target.closest?.("input")) e.preventDefault();
 });
 window.addEventListener("hashchange", () => {
   render();

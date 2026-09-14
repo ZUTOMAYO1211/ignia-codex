@@ -1688,6 +1688,9 @@ footer > a:hover {
   inset: 0;
   z-index: -1;
 }
+[data-island="galaxy"] {
+  mix-blend-mode: screen;
+}
 .void-panel,
 .nations-panel,
 .part-banner {

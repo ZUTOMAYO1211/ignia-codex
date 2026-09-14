@@ -2,6 +2,12 @@ import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
 import './Galaxy.css';
 
+const hexToRgb = hex => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!result) return [1, 1, 1];
+  return [parseInt(result[1], 16) / 255, parseInt(result[2], 16) / 255, parseInt(result[3], 16) / 255];
+};
+
 const vertexShader = `
 attribute vec2 uv;
 attribute vec2 position;
@@ -36,6 +42,10 @@ uniform float uMouseActiveFactor;
 uniform float uAutoCenterRepulsion;
 uniform bool uTransparent;
 uniform float uLightMode;
+uniform float uTint;
+uniform vec3 uStarA;
+uniform vec3 uStarB;
+uniform vec3 uCore;
 
 varying vec2 vUv;
 
@@ -112,6 +122,11 @@ vec3 StarLayer(vec2 uv) {
 
       float star = Star(gv - offset - pad, flareSize);
       vec3 color = base;
+      // Ignia: tinted halos in two hues with a pale core instead of hue-shifted stars.
+      if (uTint > 0.5) {
+        vec3 halo = mix(uStarA, uStarB, step(0.5, Hash21(si + 7.0)));
+        color = mix(halo, uCore, smoothstep(0.8, 2.6, star));
+      }
 
       float twinkle = trisn(uTime * uSpeed + seed * 6.2831) * 0.5 + 1.0;
       twinkle = mix(1.0, twinkle, uTwinkleIntensity);
@@ -194,6 +209,9 @@ export default function Galaxy({
   autoCenterRepulsion = 0,
   transparent = true,
   lightMode = false,
+  // Ignia: [halo A, halo B] hex colors and a core color; when set, they replace hueShift and saturation.
+  starColors = null,
+  coreColor = '#FFFFFF',
   ...rest
 }) {
   const ctnDom = useRef(null);
@@ -264,7 +282,11 @@ export default function Galaxy({
         uMouseActiveFactor: { value: 0.0 },
         uAutoCenterRepulsion: { value: autoCenterRepulsion },
         uTransparent: { value: transparent },
-        uLightMode: { value: lightMode ? 1 : 0 }
+        uLightMode: { value: lightMode ? 1 : 0 },
+        uTint: { value: starColors ? 1 : 0 },
+        uStarA: { value: new Float32Array(hexToRgb(starColors?.[0] ?? '#FFFFFF')) },
+        uStarB: { value: new Float32Array(hexToRgb(starColors?.[1] ?? starColors?.[0] ?? '#FFFFFF')) },
+        uCore: { value: new Float32Array(hexToRgb(coreColor)) }
       }
     });
 
@@ -337,7 +359,9 @@ export default function Galaxy({
     repulsionStrength,
     autoCenterRepulsion,
     transparent,
-    lightMode
+    lightMode,
+    starColors,
+    coreColor
   ]);
 
   return <div ref={ctnDom} className="galaxy-container" {...rest} />;

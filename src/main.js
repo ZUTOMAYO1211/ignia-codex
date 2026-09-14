@@ -185,6 +185,10 @@ function pendingPage() {
   return `<div class="reading-header"><span class="section-kicker">작업 중</span><h1>미정 항목</h1><p>원문에 🚧나 ‘미정’으로 남겨 둔 줄을 모았다<br>원문에서 정리하면 이 목록에서도 빠진다</p></div><div class="pending-list">${pending.map(({ part, section, lines }) => `<article><div class="pending-meta"><span>${escape(part.title)}</span><span class="draft-pill">검토 중</span></div><h2><a href="${articleLink(part.id, section.id)}">${escape(section.title)} ↗</a></h2><div class="prose">${md(lines.join("\n\n"))}</div></article>`).join("")}</div><div class="info-panel"><h2>국가명은 모두 가칭</h2><p>나라마다 이름 후보를 여럿 두었고 정하기 전까지는 첫 번째 후보로 적는다</p><a class="text-link" href="#part-2">명칭 후보 보기 ↗</a></div>`;
 }
 
+// Galaxy stars glow violet or cobalt around a pale lilac core, never pure white.
+// The canvas draws on black and screens onto the panel so halos only add light.
+const galaxyStars = ["#8F80F5", "#5B7CFF"];
+
 // Props for each island. React and the effects load as separate chunks so the
 // page text shows first; reduced motion keeps the pictures but stills them.
 function islandProps(name) {
@@ -217,10 +221,10 @@ function islandProps(name) {
       };
     case "galaxy":
       return {
-        hueShift: 0,
-        saturation: 0,
+        starColors: galaxyStars,
+        coreColor: "#D9DDFF",
         density: 1.1,
-        glowIntensity: 0.35,
+        glowIntensity: 0.45,
         twinkleIntensity: 0.4,
         speed: 0.6,
         starSpeed: 0.3,
@@ -228,7 +232,7 @@ function islandProps(name) {
         mouseRepulsion: !still,
         mouseInteraction: !still,
         disableAnimation: still,
-        transparent: true,
+        transparent: false,
       };
     case "topography":
       return {

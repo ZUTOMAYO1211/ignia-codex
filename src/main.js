@@ -115,7 +115,7 @@ const sectionHref = (partIndex, pattern) => {
   const section = part?.sections.find((s) => pattern.test(s.title));
   return articleLink(part?.id, section?.id);
 };
-const backgroundIslands = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid"]);
+const backgroundIslands = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid", "glitch"]);
 const island = (name, className = "") =>
   `<div class="${className}" data-island="${name}"${backgroundIslands.has(name) ? ' aria-hidden="true"' : ""}></div>`;
 const sectionHead = (title, lede, href, action) =>
@@ -222,6 +222,15 @@ function islandProps(name) {
         grain: false,
         maxDpr: 1,
       };
+    case "glitch":
+      return {
+        glitchColors: ["#15123A", "#1F1A55", "#22358F", "#3F3494"],
+        backgroundColor: "#07061A",
+        glitchSpeed: still ? Infinity : 80,
+        smooth: !still,
+        outerVignette: true,
+        centerVignette: false,
+      };
     case "galaxy":
       return {
         starColors: galaxyStars,
@@ -296,8 +305,10 @@ function islandProps(name) {
 
 let unmountIslands = null;
 
-// The world setting part sits in a dark crystal corridor behind every pane. The
-// scene stays mounted while the reader moves between its chapters.
+// The world setting part sits in a dark crystal corridor and the roleplay rules
+// part in scrambling letters behind every pane. A scene stays mounted while the
+// reader moves between the chapters of its part.
+const partScenes = ["acid", null, null, "glitch"];
 const backdropScene = document.querySelector(".backdrop-scene");
 let sceneName = null;
 let unmountScene = null;
@@ -328,7 +339,7 @@ function render() {
     main.innerHTML = `<div class="reading-header"><span class="section-kicker">원문</span><h1>이그니아 통합 코덱스</h1><p>이 사이트의 내용은 전부 이 MD 파일 하나에서 나온다</p><button id="download-md" class="primary-link">MD 파일 받기 ↓</button></div><article class="prose original">${md(raw)}</article>`;
     label = "원문 보기";
   }
-  setScene(part === parts[0] ? "acid" : null);
+  setScene(part ? (partScenes[parts.indexOf(part)] ?? null) : null);
   const isHome = !part && route !== "pending" && route !== "original";
   main.dataset.route = isHome ? "home" : "page";
   if (isHome) main.innerHTML = home();

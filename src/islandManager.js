@@ -8,6 +8,7 @@ const loaders = {
   threads: () => import("./components/Threads.jsx"),
   particles: () => import("./components/Particles.jsx"),
   acid: () => import("./components/AcidSquares.jsx"),
+  glitch: () => import("./components/LetterGlitch.jsx"),
   heroTitle: () => import("./visuals/HeroTitle.jsx"),
   partTiles: () => import("./visuals/PartTiles.jsx"),
   magic: () => import("./visuals/MagicLineage.jsx"),
@@ -18,7 +19,7 @@ const loaders = {
   fun: () => import("./visuals/FunModeGauge.jsx"),
   grades: () => import("./visuals/GradeLadder.jsx"),
 };
-const backgrounds = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid"]);
+const backgrounds = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid", "glitch"]);
 
 export function mountIslands(root, getProps) {
   const live = new Map();

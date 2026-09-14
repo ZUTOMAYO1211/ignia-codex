@@ -267,39 +267,44 @@ main:focus {
   opacity: var(--grain-opacity);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-/* The world setting part: a dark crystal corridor (AcidSquares) fills the ground. */
+/* Some parts replace the ground with a dark moving scene: the world setting part
+   has a crystal corridor (AcidSquares), the roleplay rules part has scrambling
+   letters (LetterGlitch). The rules below apply to any scene. */
 .backdrop-scene,
 .backdrop-effect {
   position: absolute;
   inset: 0;
 }
-body[data-scene="acid"] .backdrop {
+body[data-scene] .backdrop {
   --wash: linear-gradient(165deg, #0a0822 0%, #05040c 55%, #0b0a26 100%);
   --orb-blue: rgb(44 70 201 / 0.26);
   --orb-violet: rgb(91 63 214 / 0.24);
   --orb-cobalt: rgb(29 42 143 / 0.32);
   --orb-light: transparent;
 }
-body[data-scene="acid"] .seal-rings {
+body[data-scene] .seal-rings {
   display: none;
 }
 /* Light glass thickens over the dark ground so reading surfaces stay bright. */
-:root:not([data-theme="dark"]) body[data-scene="acid"] {
+:root:not([data-theme="dark"]) body[data-scene] {
   --glass: rgb(255 255 255 / 0.84);
   --glass-strong: rgb(255 255 255 / 0.92);
   --glass-soft: rgb(255 255 255 / 0.76);
   --nav-glass: rgb(255 255 255 / 0.9);
 }
-/* Words that sit straight on the corridor take the night ink in both modes. */
-body[data-scene="acid"] :is(.chapter > h2, .lineage-link, .diagram-caption, footer) {
+/* Words that sit straight on the scene take the night ink in both modes. */
+body[data-scene] :is(.chapter > h2, .lineage-link, .diagram-caption, footer) {
   --ink: #f3f2ff;
   --muted: #a3a1c2;
   --accent-text: #a9bbff;
   --violet-text: #c4b8ff;
   --line-strong: rgb(255 255 255 / 0.2);
 }
+body[data-scene] :is(.chapter > h2, .toc > span) {
+  text-shadow: 0 2px 14px rgb(5 4 12 / 0.9), 0 0 2px rgb(5 4 12 / 0.8);
+}
 @media (max-width: 960px) {
-  body[data-scene="acid"] .toc > span {
+  body[data-scene] .toc > span {
     color: #f3f2ff;
   }
 }

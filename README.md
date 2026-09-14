@@ -79,4 +79,6 @@ GitHub Pages를 GitHub Actions 방식으로 설정한다. `main`에 푸시하면
 
 생성 이미지는 분위기를 표현하는 콘셉트 아트이며 확정된 지리·국가·랜드마크가 아니다. 이미지 출처 및 프롬프트는 `docs/image-generation.md`에 기록한다.
 
+사이트에서는 글자를 드래그로 선택하거나 이미지·링크를 끌어낼 수 없다. `src/style.css`의 `user-select: none`과 `src/main.js`의 `dragstart` 차단으로 막고, 검색 입력창만 예외로 둔다.
+
 서버 저장이나 브라우저 내 편집 기능은 없다. 설정 수정은 원본 MD에서 이루어진다. 검색은 브라우저 안에서만 동작한다.

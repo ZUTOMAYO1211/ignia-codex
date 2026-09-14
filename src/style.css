@@ -123,8 +123,20 @@
 * {
   box-sizing: border-box;
 }
+/* Text can't be drag-selected and images or links can't be dragged off the page; the search field stays editable. */
 body {
   margin: 0;
+  -webkit-user-select: none;
+  user-select: none;
+}
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+img,
+a {
+  -webkit-user-drag: none;
 }
 html {
   scroll-behavior: smooth;

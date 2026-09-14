@@ -465,6 +465,10 @@ themeToggle.onclick = () => {
 systemDark.addEventListener("change", (e) => {
   if (!savedTheme()) applyTheme(e.matches ? "dark" : "light");
 });
+// Nothing on the page can be dragged; the search field keeps normal text dragging.
+document.addEventListener("dragstart", (e) => {
+  if (!e.target.closest?.("input, textarea")) e.preventDefault();
+});
 window.addEventListener("hashchange", () => {
   render();
   main.focus({ preventScroll: true });

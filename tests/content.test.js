@@ -12,6 +12,7 @@ import {
   getTerrains,
   getEras,
   getTurnRules,
+  getFunModes,
   getCodexStats,
 } from "../src/content.js";
 const raw = readFileSync(
@@ -90,4 +91,11 @@ test("turn rules come from the roleplay chapter and its worked example", () => {
   const stats = getCodexStats(parts);
   assert.equal(stats.nations, 10);
   assert.equal(stats.races, 4);
+  assert.equal(stats.funLevels, 5);
+});
+test("fun mode lists five levels with the same staging effects on each", () => {
+  const modes = getFunModes(parts);
+  assert.deepEqual(modes.map((m) => m.level), [1, 2, 3, 4, 5]);
+  assert.deepEqual(modes[0].effects.map((e) => e.label), ["상황 변수", "선택지", "웃긴 상황·긴박한 상황"]);
+  assert.ok(modes.every((m) => m.effects.length === 3 && m.effects.every((e) => e.text)));
 });

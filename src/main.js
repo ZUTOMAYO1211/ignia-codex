@@ -14,6 +14,7 @@ import {
   getNations,
   getEras,
   getTurnRules,
+  getFunModes,
   getCodexStats,
 } from "./content.js";
 import { mountIslands } from "./islandManager.js";
@@ -30,6 +31,7 @@ const codex = {
   nations: getNations(parts),
   eras: getEras(parts),
   turn: getTurnRules(parts),
+  funModes: getFunModes(parts),
   stats: getCodexStats(parts),
 };
 const heroLede = "과거·현재·미래 세계의 모든 지식이 담긴 제 4의 도서관";
@@ -37,7 +39,7 @@ const descriptions = [
   "세계 구조·마력 체계·속성·권능·종족·직업·장비",
   "이그나르 대륙의 지형·국가·세력 관계·게이트",
   "창세 가설과 대륙력 0년 이후의 연표",
-  "턴 구조·캐릭터 생성·판정 방식을 다룬 텍스트 TRPG 규칙",
+  "턴 구조·재미 모드·캐릭터 생성·판정 방식을 다룬 텍스트 TRPG 규칙",
 ];
 const shortTitles = [
   "세계 설정",
@@ -167,6 +169,7 @@ function chapterVisual(part, section) {
   if (at(1, /세력 관계/)) return nationsPanel(false);
   if (at(2, /연표/)) return island("eras", "chapter-visual");
   if (at(3, /턴 구조/)) return island("turn", "chapter-visual");
+  if (at(3, /재미 모드/)) return island("fun", "chapter-visual");
   return "";
 }
 
@@ -269,7 +272,7 @@ function islandProps(name) {
           { kind: "attributes", stats: [["기본 속성", stats.attributes], ["특수 속성", stats.special], ["종족군", stats.races]] },
           { kind: "nations", stats: [["세력", stats.nations], ["주요 지형", stats.terrains]] },
           { kind: "eras", stats: [["시대", stats.eras], ["현재 대륙력", 800, "년대"]] },
-          { kind: "turn", stats: [["턴당 행동", stats.actions], ["행동당 선택지", stats.options]] },
+          { kind: "turn", stats: [["턴당 행동", stats.actions], ["행동당 선택지", stats.options], ["재미 모드", stats.funLevels, "단계"]] },
         ].map((tile, i) => ({ ...tile, href: `#${parts[i].id}`, label: `제${i + 1}부`, title: shortTitles[i] })),
       };
     case "magic":
@@ -284,6 +287,8 @@ function islandProps(name) {
       return { eras };
     case "turn":
       return { turn };
+    case "fun":
+      return { modes: codex.funModes };
     default:
       return {};
   }

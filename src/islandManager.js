@@ -15,6 +15,7 @@ const loaders = {
   nations: () => import("./visuals/NationMap.jsx"),
   eras: () => import("./visuals/EraTimeline.jsx"),
   turn: () => import("./visuals/TurnDemo.jsx"),
+  fun: () => import("./visuals/FunModeGauge.jsx"),
   grades: () => import("./visuals/GradeLadder.jsx"),
 };
 const backgrounds = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid"]);

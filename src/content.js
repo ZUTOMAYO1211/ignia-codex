@@ -188,6 +188,21 @@ export function getTurnRules(parts) {
   };
 }
 
+// Fun mode levels: each row names a level and how the GM's staging changes at it.
+export function getFunModes(parts) {
+  const body = findSection(parts[3], /재미 모드/)?.body ?? "";
+  const rows = body
+    .split("\n")
+    .filter((line) => line.startsWith("|") && !/^\|\s*:?-/.test(line))
+    .map((line) => line.split("|").slice(1, -1).map((cell) => cleanText(cell)));
+  const [head = [], ...levels] = rows;
+  return levels.map(([name, ...cells]) => ({
+    name,
+    level: Number(name.match(/\d+/)?.[0]),
+    effects: cells.map((text, i) => ({ label: head[i + 1], text })),
+  }));
+}
+
 export function getCodexStats(parts) {
   const attrs = getAttributes(parts);
   return {
@@ -197,6 +212,7 @@ export function getCodexStats(parts) {
     nations: getNations(parts).length,
     terrains: getTerrains(parts).length,
     eras: getEras(parts).length,
+    funLevels: getFunModes(parts).length,
     ...(({ actions, options }) => ({ actions, options }))(getTurnRules(parts)),
   };
 }

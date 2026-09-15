@@ -73,7 +73,7 @@ GitHub Pages를 GitHub Actions 방식으로 설정한다. `main`에 푸시하면
 배경 효과는 두 층이다.
 
 - **부 머리 배경:** 제1부 Galaxy, 제2부 Topography, 제3부 Threads, 제4부 Particles다. 세계 구조 패널에도 Galaxy를 깐다. 홈 히어로는 GradientWaves다.
-- **페이지 맨 뒤 배경:** 제1부는 AcidSquares 결정 복도, 제2부는 Silk 비단 주름, 제4부는 LetterGlitch 글자 글리치이고 제3부는 기본 CSS 배경이다. 부마다 쓰는 배경은 `src/main.js`의 `partScenes`에서 정하고, `setScene`이 `.backdrop` 안에 붙여 같은 부의 챕터 사이를 옮겨도 다시 그리지 않는다. 이런 배경 위에서는 라이트 모드의 유리를 더 불투명하게 하고 유리 밖에 놓인 챕터 제목·푸터 글자를 밝게 바꾼다.
+- **페이지 맨 뒤 배경:** 제1부는 AcidSquares 결정 복도, 제2부는 Silk 비단 주름, 제3부는 LightPillar 빛기둥, 제4부는 LetterGlitch 글자 글리치다. 홈·미정 항목·원문 보기는 기본 CSS 배경이다. 부마다 쓰는 배경은 `src/main.js`의 `partScenes`에서 정하고, `setScene`이 `.backdrop` 안에 붙여 같은 부의 챕터 사이를 옮겨도 다시 그리지 않는다. 이런 배경 위에서는 라이트 모드의 유리를 더 불투명하게 하고 유리 밖에 놓인 챕터 제목·푸터 글자를 밝게 바꾼다.
 
 색과 속도는 모두 `src/main.js`의 `islandProps`에서 조정한다. `src/islandManager.js`는 `data-island` 자리가 화면 근처에 오면 해당 컴포넌트를 불러와 붙이고, WebGL 배경은 화면에서 멀어지면 다시 뗀다. 동작 줄이기 설정에서는 애니메이션을 멈춘 채로 그리고, WebGL2가 없으면 CSS 그라디언트만 보인다.
 
@@ -87,6 +87,7 @@ GitHub Pages를 GitHub Actions 방식으로 설정한다. `main`에 푸시하면
 - **Stepper:** 사이트가 버튼을 직접 그리므로 기본 단계 표시와 체크 아이콘을 뺐고 마지막 버튼 문구 `completeButtonText` 옵션을 더했다.
 - **AcidSquares:** 블러 후처리·마우스 반응·그레인·라이트 모드를 뺐고 캔버스 해상도 상한 `maxDpr` 옵션을 더했다.
 - **Silk:** 원본은 three.js와 @react-three/fiber를 쓰지만 화면 한 장짜리 셰이더라서 같은 셰이더와 옵션을 ogl로 옮겼다.
+- **LightPillar:** 원본은 three.js를 쓰지만 같은 이유로 셰이더·품질 단계·프레임 속도 조절을 그대로 ogl로 옮겼다. 사이트는 화면 해상도의 0.65배로 그리는 `quality: "medium"`을 쓰고 마우스 조작과 라이트 모드는 뺐다. 동작 줄이기 설정에서는 한 번만 그리고 멈춘다.
 - **Galaxy:** 별 색을 정하는 `starColors`(바깥 빛 두 가지)와 `coreColor`(안쪽 빛) 옵션을 더해 바이올렛 `#8F80F5`·코발트 `#5B7CFF` 별빛에 옅은 라일락 `#D9DDFF` 속을 쓴다. 캔버스는 검은 바탕에 그린 뒤 CSS `mix-blend-mode: screen`으로 패널에 겹쳐서 별빛이 패널을 어둡게 만들지 않는다.
 - **Galaxy · Topography · Silk · LetterGlitch:** 쓰지 않는 라이트 모드 경로를 뺐다.
 

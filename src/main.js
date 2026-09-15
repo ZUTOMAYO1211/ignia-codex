@@ -106,7 +106,7 @@ const sectionHref = (partIndex, pattern) => {
   const section = part?.sections.find((s) => pattern.test(s.title));
   return articleLink(part?.id, section?.id);
 };
-const backgroundIslands = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid", "glitch", "silk"]);
+const backgroundIslands = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid", "glitch", "silk", "pillar"]);
 const island = (name, className = "") =>
   `<div class="${className}" data-island="${name}"${backgroundIslands.has(name) ? ' aria-hidden="true"' : ""}></div>`;
 const sectionHead = (title, lede, href, action) =>
@@ -213,6 +213,19 @@ function islandProps(name) {
         grain: false,
         maxDpr: 1,
       };
+    case "pillar":
+      return {
+        topColor: "#3454D1",
+        bottomColor: "#6D5CE8",
+        intensity: 0.55,
+        rotationSpeed: still ? 0 : 0.25,
+        glowAmount: 0.0035,
+        pillarWidth: 3,
+        pillarHeight: 0.4,
+        noiseIntensity: 0.35,
+        quality: "medium",
+        mixBlendMode: "screen",
+      };
     case "silk":
       return {
         color: "#3A338F",
@@ -305,9 +318,9 @@ function islandProps(name) {
 let unmountIslands = null;
 
 // Behind every pane the world setting part has a dark crystal corridor, the
-// geography part slow indigo silk, and the roleplay rules part scrambling
-// letters. A scene stays mounted while the reader moves between its chapters.
-const partScenes = ["acid", "silk", null, "glitch"];
+// geography part slow indigo silk, the history part a turning pillar of light,
+// and the roleplay rules part scrambling letters. A scene stays mounted while the reader moves between its chapters.
+const partScenes = ["acid", "silk", "pillar", "glitch"];
 const backdropScene = document.querySelector(".backdrop-scene");
 let sceneName = null;
 let unmountScene = null;

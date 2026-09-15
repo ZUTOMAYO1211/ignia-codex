@@ -100,12 +100,25 @@ export function getAttributes(parts) {
       evolves: !/진화 없음/.test(e),
     };
   });
-  const fusions = getTable(body, "### 3-3.").map(([a, b, result]) => ({
-    a: cleanText(a),
-    b: cleanText(b),
-    result: /🚧/.test(result) ? "" : cleanText(result),
-    pending: /🚧|미정/.test(result),
-  }));
+  const glyphByMagic = new Map(
+    basics.flatMap((b) => [
+      [b.evolved, b.glyph],
+      [`${b.name}(${b.glyph}) 마법`, b.glyph],
+      [`${b.name} 마법`, b.glyph],
+    ]),
+  );
+  const fusions = getTable(body, "### 3-3.").map(([a, b, result]) => {
+    const left = cleanText(a);
+    const right = cleanText(b);
+    return {
+      a: left,
+      b: right,
+      aGlyph: glyphByMagic.get(left) ?? "",
+      bGlyph: glyphByMagic.get(right) ?? "",
+      result: /🚧/.test(result) ? "" : cleanText(result),
+      pending: /🚧|미정/.test(result),
+    };
+  });
   const special = bullets(body.split("### 3-4.")[1]?.split(/^---/m)[0] ?? "");
   return { basics, fusions, special };
 }

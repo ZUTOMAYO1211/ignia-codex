@@ -1,4 +1,5 @@
 import { elementIcon } from "../elementIcons.js";
+import { attributeIcon } from "../attributeIcons.js";
 import { useState } from "react";
 import { elementColor } from "./palette.js";
 import "./visuals.css";
@@ -19,11 +20,11 @@ export default function AttributeWheel({ basics, fusions, special }) {
   const [active, setActive] = useState(null);
   const ring = basics.filter((b) => b.evolves);
   const core = basics.filter((b) => !b.evolves);
-  const pos = new Map(ring.map((b, i) => [b.evolved, polar(i, ring.length, NODE_R)]));
+  const pos = new Map(ring.map((b, i) => [b.glyph, polar(i, ring.length, NODE_R)]));
   const byGlyph = new Map(basics.map((b) => [b.glyph, b]));
   const current = active ? byGlyph.get(active) : null;
-  const related = (f) => current && (f.a === current.evolved || f.b === current.evolved);
-  const chords = fusions.filter((f) => pos.has(f.a) && pos.has(f.b));
+  const related = (f) => current && (f.aGlyph === current.glyph || f.bGlyph === current.glyph);
+  const chords = fusions.filter((f) => pos.has(f.aGlyph) && pos.has(f.bGlyph));
   const decided = fusions.filter((f) => !f.pending).length;
 
   const nodeProps = (b) => ({
@@ -49,8 +50,8 @@ export default function AttributeWheel({ basics, fusions, special }) {
         <circle cx={C} cy={C} r={NODE_R} className="wheel-orbit" />
         <circle cx={C} cy={C} r="62" className="wheel-orbit is-inner" />
         {chords.map((f) => {
-          const [x1, y1] = pos.get(f.a);
-          const [x2, y2] = pos.get(f.b);
+          const [x1, y1] = pos.get(f.aGlyph);
+          const [x2, y2] = pos.get(f.bGlyph);
           // Bend each chord a little toward the centre and label it near its
           // first attribute so labels never sit under the core node.
           const qx = (x1 + x2) / 2 + (C - (x1 + x2) / 2) * 0.3;
@@ -97,7 +98,11 @@ export default function AttributeWheel({ basics, fusions, special }) {
       <div className="wheel-detail" aria-live="polite">
         {current ? (
           <>
-            <img className="element-image" src={elementIcon(current.glyph)} alt="" width="64" height="64" />
+            <div className="attribute-progression" aria-label={current.evolves ? `${current.name} 마법에서 ${current.evolved}으로 진화` : `${current.name} 마법은 진화하지 않음`}>
+              <img className="element-image" src={elementIcon(current.glyph)} alt="" width="64" height="64" />
+              {current.evolves && <span aria-hidden="true">→</span>}
+              {current.evolves && <img className="element-image" src={attributeIcon(current.evolved)} alt="" width="64" height="64" />}
+            </div>
             <h3>{current.name} 마법</h3>
             <p>
               {current.evolves
@@ -106,10 +111,14 @@ export default function AttributeWheel({ basics, fusions, special }) {
             </p>
             <ul className="wheel-fusions">
               {fusions
-                .filter((f) => f.a === current.evolved || f.b === current.evolved)
+                .filter((f) => f.aGlyph === current.glyph || f.bGlyph === current.glyph)
                 .map((f) => (
                   <li key={`${f.a}-${f.b}`} className={f.pending ? "is-pending" : ""}>
-                    {f.a} + {f.b} <b>{f.pending ? "미정" : f.result}</b>
+                    <span>{f.a} + {f.b}</span>
+                    <b>
+                      {attributeIcon(f.result) && <img src={attributeIcon(f.result)} alt="" width="28" height="28" />}
+                      {f.pending ? "미정" : f.result}
+                    </b>
                   </li>
                 ))}
             </ul>
@@ -128,7 +137,10 @@ export default function AttributeWheel({ basics, fusions, special }) {
           <h4>적성이 있어야 쓰는 특수 속성 {special.length}종</h4>
           <ul>
             {special.map((s) => (
-              <li key={s}>{s}</li>
+              <li key={s}>
+                {attributeIcon(s) && <img src={attributeIcon(s)} alt="" width="28" height="28" />}
+                {s}
+              </li>
             ))}
           </ul>
         </div>

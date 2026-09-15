@@ -1,4 +1,5 @@
 import { nationEmblem } from "../nationEmblems.js";
+import { nationArtwork } from "../nationArt.js";
 import { useState } from "react";
 import "./visuals.css";
 
@@ -16,10 +17,11 @@ const LAYOUT = {
   "4-4": [560, 415],
   "4-5": [470, 70],
   "4-6": [665, 320],
+  "4-7": [670, 440],
 };
 const TONE = { "3-1": "order", "3-2": "force", "4-6": "hazard" };
 // Names sit below their dot unless that would collide with a neighbour.
-const LABEL_ABOVE = new Set(["3-3", "4-4", "4-5", "4-2", "4-1"]);
+const LABEL_ABOVE = new Set(["3-3", "4-4", "4-5", "4-2", "4-1", "4-7"]);
 
 // Relation meanings come from the geography chapter's relations section.
 const EDGES = [
@@ -31,6 +33,9 @@ const EDGES = [
   ["3-2", "4-2", "threat", "팽창 위협"],
   ["3-2", "4-4", "threat", "팽창 위협"],
   ["3-2", "4-5", "threat", "팽창 위협"],
+  ["3-2", "4-7", "threat", "국경 긴장"],
+  ["4-7", "4-4", "bond", "교역"],
+  ["4-7", "4-5", "bond", "정보 공유"],
   ["4-2", "3-1", "supply", "무구 공급"],
   ["4-2", "3-3", "supply", "무구 공급"],
 ];
@@ -42,7 +47,7 @@ const LEGEND = [
   ["threat", "팽창 위협"],
   ["supply", "무구 공급"],
 ];
-const DETAIL_FIELDS = ["위치", "통치", "이념", "성격", "상황", "대외 관계"];
+const DETAIL_FIELDS = ["위치", "통치", "이념", "종족·체계", "성격", "상황", "대외 관계"];
 
 export default function NationMap({ nations }) {
   const known = nations.filter((n) => LAYOUT[n.id]);
@@ -113,6 +118,7 @@ export default function NationMap({ nations }) {
       </ul>
       {current && (
         <div className="nation-detail" aria-live="polite">
+          {nationArtwork(current.id) && <img className="nation-detail-art" src={nationArtwork(current.id)} alt={`${current.name} 환경 콘셉트 아트`} width="1440" height="810" />}
           <p className="nation-detail-kind">{current.id.startsWith("3-") ? "모티브 국가" : current.id === "4-6" ? "비국가 지역" : "신규 세력"}</p>
           {nationEmblem(current.id) && <figure className="nation-emblem-detail"><img src={nationEmblem(current.id)} alt={`${current.name} 문장 초안`} width="96" height="96" /><figcaption>문장 초안</figcaption></figure>}
           <h3>{current.name}</h3>

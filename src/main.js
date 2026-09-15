@@ -1,5 +1,7 @@
 import { nationEmblem } from "./nationEmblems.js";
+import { nationArtwork } from "./nationArt.js";
 import { elementIcon } from "./elementIcons.js";
+import { attributeIcon } from "./attributeIcons.js";
 import { marked } from "marked";
 import raw from "../이그니아_통합문서.md?raw";
 import {
@@ -58,7 +60,7 @@ const escape = (value) =>
 const md = (value) => marked.parse(value);
 // The codex seal: the outer rings are the void around every world, the eight
 // small crystals are the basic attributes, and the split crystal stacks the
-// celestial realm (open), the material realm (crystal blue), and the demon realm (solid).
+// celestial, spirit, material, and demon realms from top to bottom.
 const sealOrnaments = Array.from({ length: 8 }, (_, i) => {
   const a = (i * Math.PI) / 4 - Math.PI / 2;
   const [ux, uy] = [Math.cos(a), Math.sin(a)];
@@ -70,9 +72,10 @@ const sealMark = (className) => `<svg class="${className}" viewBox="0 0 64 64" a
   <circle cx="32" cy="32" r="29.5" fill="none" stroke="currentColor" stroke-width="3"/>
   <circle cx="32" cy="32" r="23" fill="none" stroke="currentColor" stroke-width="1.25"/>
   <path d="${sealOrnaments}" fill="currentColor"/>
-  <path d="M32 14.8 38.4 24.6H25.6Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M22.92 28h18.16L43.5 32l-2.42 4H22.92L20.5 32Z" fill="var(--crystal)"/>
-  <path d="M24.43 38.5h15.14L32 51Z" fill="currentColor"/>
+  <path d="M32 14.5 38 23.5H26Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M25.2 26h13.6l2 3.2H23.2Z" fill="#8fcfbe"/>
+  <path d="M22.2 31.7h19.6l2 3.4-2 3.4H22.2l-2-3.4Z" fill="var(--crystal)"/>
+  <path d="M24.8 41h14.4L32 51Z" fill="currentColor"/>
 </svg>`;
 const allSections = parts.flatMap((p) =>
   p.sections.map((s) => ({ ...s, part: p })),
@@ -98,7 +101,11 @@ const main = document.querySelector("#main");
 function elementsDiagram() {
   const rows = getTable(parts[0].sections[2].body, "### 3-2.");
   const glyphs = ["火", "水", "風", "土", "雷", "光", "暗", "無"];
-  return `<div class="element-grid">${rows.map((r, i) => `<div class="element" style="--element:${elementColor(glyphs[i])}"><img class="element-image" src="${elementIcon(glyphs[i])}" alt="" width="64" height="64" /><span>${escape(cleanText(r[0]).replace(" 마법", ""))}</span><span class="evolution-line" aria-hidden="true">↓</span><strong>${escape(cleanText(r[1]).split(" — ")[0])}</strong></div>`).join("")}</div><p class="diagram-caption">숙련도가 일정 수준에 이르면 상위 마법으로 진화하지만 무(無)는 진화하지 않는다</p>`;
+  return `<div class="element-grid">${rows.map((r, i) => {
+    const evolved = cleanText(r[1]).split(" — ")[0];
+    const evolvedIcon = attributeIcon(evolved);
+    return `<div class="element" style="--element:${elementColor(glyphs[i])}"><div class="element-icon-pair"><img class="element-image" src="${elementIcon(glyphs[i])}" alt="" width="56" height="56" />${evolvedIcon ? `<span class="evolution-line" aria-hidden="true">→</span><img class="element-image" src="${evolvedIcon}" alt="" width="56" height="56" />` : ""}</div><span>${escape(cleanText(r[0]).replace(" 마법", ""))}</span><strong>${escape(evolved)}</strong></div>`;
+  }).join("")}</div><p class="diagram-caption">기본 속성 아이콘과 진화한 상위 마법 아이콘을 함께 표시한다. 무(無)는 진화하지 않는다.</p>`;
 }
 
 const sectionHref = (partIndex, pattern) => {
@@ -129,10 +136,10 @@ function home() {
   return `<section class="hero">${island("waves", "hero-waves")}<div class="hero-content"><p class="hero-badge"><span>집필 중</span>현재 시점 대륙력 800년대</p><div class="hero-title" data-island="heroTitle"><h1>이그니아 코덱스</h1><p class="hero-lede">${heroLede}</p></div><div class="hero-actions"><a class="btn btn-light" href="${sectionHref(0, /세계 구조/)}">처음부터 읽기</a><a class="btn btn-glass" href="#pending">미정 항목 보기</a></div></div></section>
   <div class="home-body">
     <div class="home-lead">
-      <section class="stage-card"><div class="stage-art" role="img" aria-label="천계·물질계·심연을 표현한 이그니아 콘셉트 아트"></div><small class="stage-note">콘셉트 아트라 실제 지형과 다를 수 있음</small><div class="stage-copy"><p class="glass-badge"><span>현재 무대</span>대륙력 800년대</p><h2>이그나르 대륙</h2><p class="stage-lede">왕국과 제국은 국경에서 대치 중이고 마계 접경의 게이트는 점점 불안정해진다</p><a class="btn btn-light" href="#part-2">지리와 국가 보기</a></div></section>
+      <section class="stage-card"><div class="stage-art" role="img" aria-label="천계·정령계·물질계·마계를 표현한 이그니아 콘셉트 아트"></div><small class="stage-note">콘셉트 아트라 실제 지형과 다를 수 있음</small><div class="stage-copy"><p class="glass-badge"><span>현재 무대</span>대륙력 800년대</p><h2>이그나르 대륙</h2><p class="stage-lede">왕국과 제국은 국경에서 대치 중이고 마계 접경의 게이트는 점점 불안정해진다</p><a class="btn btn-light" href="#part-2">지리와 국가 보기</a></div></section>
       <section class="part-tiles-wrap" aria-label="목차"><div data-island="partTiles">${codexIndex()}</div></section>
     </div>
-    <section class="void-panel">${island("galaxy", "panel-bg")}<div class="void-copy"><h2>위에서부터 <br>천계·물질계·마계</h2><p>이그니아는 여러 세계가 층층이 포개진 다집합 구축형 세계다<br>허무 에너지만 있는 외곽세계를 사이에 두고 세 세계가 차례로 놓여 있고 그 중심은 물질계다</p><a class="btn btn-glass" href="${sectionHref(0, /세계 구조/)}">세계 간 이동 읽기</a></div>${strataDiagram()}</section>
+    <section class="void-panel">${island("galaxy", "panel-bg")}<div class="void-copy"><h2>천계·정령계<br>물질계·마계</h2><p>이그니아는 여러 세계가 층층이 포개진 다집합 구축형 세계다<br>네 세계의 사이와 바깥을 외곽세계가 감싸며, 그 너머에는 외신이 존재한다</p><a class="btn btn-glass" href="${sectionHref(0, /세계 구조/)}">세계 간 이동 읽기</a></div>${strataDiagram()}</section>
     <section class="home-section">${sectionHead(`마력을 다루는 ${magic.disciplines.length}가지 방법`, `${lineage} 갈라져 나왔다`, sectionHref(0, /마력 체계/), "마력 체계 읽기")}${island("magic")}</section>
     <section class="home-section">${sectionHead(`기본 속성 ${stats.attributes}종과 상위 마법`, "속성을 누르면 진화한 마법과 융합 조합이 보인다", sectionHref(0, /속성/), "속성 전체 읽기")}<div data-island="attributes">${elementsDiagram()}</div></section>
     ${nationsPanel(true)}
@@ -145,7 +152,7 @@ function home() {
 // Mirrors the source document's diagram, where a band of the void separates each world.
 function strataDiagram() {
   const gap = '<span class="strata-gap">외곽세계</span>';
-  return `<div class="strata-wrap"><div class="strata" role="img" aria-label="외곽세계를 사이에 두고 천계·물질계·마계가 차례로 놓인 계층 구조">${gap}<div class="stratum celestial"><strong>천계</strong><small>Celestial Realm</small></div>${gap}<div class="stratum material"><strong>물질계</strong><em>중심 세계</em><small>Material Realm</small></div>${gap}<div class="stratum abyss"><strong>마계</strong><small>Demon Realm</small></div>${gap}</div><p class="strata-note">세계 간 진입은 일반적으로 편도이다</p></div>`;
+  return `<div class="strata-wrap"><div class="strata" role="img" aria-label="외곽세계를 사이에 두고 천계·정령계·물질계·마계가 차례로 놓인 계층 구조">${gap}<div class="stratum celestial"><strong>천계</strong><small>Celestial Realm</small></div>${gap}<div class="stratum spirit"><strong>정령계</strong><small>Spirit Realm</small></div>${gap}<div class="stratum material"><strong>물질계</strong><em>중심 세계</em><small>Material Realm</small></div>${gap}<div class="stratum abyss"><strong>마계</strong><small>Demon Realm</small></div>${gap}</div><p class="strata-note">외곽세계에는 내부 법칙에 속하지 않는 외신이 존재한다</p></div>`;
 }
 
 // Each chapter that has a picture in the codex gets its island above the prose.
@@ -356,14 +363,16 @@ function render() {
   main.dataset.route = isHome ? "home" : "page";
   if (isHome) main.innerHTML = home();
   unmountIslands = mountIslands(main, islandProps);
-  // Nation headings in the geography part show their draft emblem.
+  // Nation headings in the geography part pair a place image with the draft emblem.
   if (part === parts[1]) {
     main.querySelectorAll(".prose h3").forEach((heading) => {
-      const url = nationEmblem(heading.textContent.match(/^([34]-[1-5])\./)?.[1]);
-      if (!url) return;
+      const id = heading.textContent.match(/^([34]-\d+)\./)?.[1];
+      const emblem = nationEmblem(id);
+      const artwork = nationArtwork(id);
+      if (!emblem && !artwork) return;
       heading.insertAdjacentHTML(
         "afterend",
-        `<figure class="nation-prose-emblem"><img src="${url}" alt="${escape(heading.textContent)} 문장 초안" width="112" height="112" loading="lazy" /><figcaption>문장 초안 · 국가명 가칭</figcaption></figure>`,
+        `<div class="nation-prose-identity">${artwork ? `<figure class="nation-prose-art"><img src="${artwork}" alt="${escape(heading.textContent)} 환경 콘셉트 아트" width="1440" height="810" loading="lazy" /><figcaption>환경 콘셉트 아트 · 설정 확정 전</figcaption></figure>` : ""}${emblem ? `<figure class="nation-prose-emblem"><img src="${emblem}" alt="${escape(heading.textContent)} 문장 초안" width="88" height="88" loading="lazy" /><figcaption>문장 초안 · 국가명 가칭</figcaption></figure>` : ""}</div>`,
       );
     });
   }

@@ -17,6 +17,9 @@ import {
   getTurnRules,
   getFunModes,
   getFunPresets,
+  getRaces,
+  getRaceRegions,
+  getStatCodes,
   getCodexStats,
 } from "./content.js";
 import { mountIslands } from "./islandManager.js";
@@ -35,6 +38,9 @@ const codex = {
   turn: getTurnRules(parts),
   funModes: getFunModes(parts),
   funPresets: getFunPresets(parts),
+  races: getRaces(parts),
+  raceRegions: getRaceRegions(parts),
+  statCodes: getStatCodes(parts),
   stats: getCodexStats(parts),
 };
 const heroLede = "과거·현재·미래 세계의 모든 지식이 담긴 제 4의 도서관";
@@ -166,6 +172,7 @@ function chapterVisual(part, section) {
     return `<div class="void-panel is-compact">${island("galaxy", "panel-bg")}${strataDiagram()}</div>`;
   if (at(0, /마력 체계/)) return island("magic", "chapter-visual");
   if (at(0, /속성/)) return `<div class="chapter-visual" data-island="attributes">${elementsDiagram()}</div>`;
+  if (at(0, /종족/)) return island("races", "chapter-visual");
   if (at(0, /장비/)) return island("grades", "chapter-visual");
   if (at(1, /세력 관계/)) return nationsPanel(false);
   if (at(2, /연표/)) return island("eras", "chapter-visual");
@@ -312,6 +319,8 @@ function islandProps(name) {
       return attributes;
     case "grades":
       return { grades };
+    case "races":
+      return { races: codex.races, regions: codex.raceRegions, stats: codex.statCodes };
     case "nations":
       return { nations };
     case "eras":

@@ -64,6 +64,7 @@ GitHub Pages를 GitHub Actions 방식으로 설정한다. `main`에 푸시하면
 | 제1~4부 타일 | `src/visuals/PartTiles.jsx` | 속성·국가·연표·턴 수치 | SpotlightCard · CountUp |
 | 마력 체계 계보 | `src/visuals/MagicLineage.jsx` | 제1부 §2 | SpotlightCard |
 | 속성 바퀴 | `src/visuals/AttributeWheel.jsx` | 제1부 §3 표 | 직접 제작 |
+| 종족 보정판 | `src/visuals/RaceBoard.jsx` | 제1부 §7 종족군 표와 지역별 분포 | 직접 제작 |
 | 장비 등급 | `src/visuals/GradeLadder.jsx` | 제1부 §10 표 | 직접 제작 |
 | 세력 관계도 | `src/visuals/NationMap.jsx` | 제2부 §3~5 | 직접 제작 · Topography 배경 |
 | 시대 연표 | `src/visuals/EraTimeline.jsx` | 제3부 연표 | 직접 제작 |

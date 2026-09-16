@@ -854,7 +854,10 @@ main > .prose > :not(.table-scroll):not(.code-block) {
 .prose th {
   padding: 14px 16px;
   border: 1px solid var(--line);
-  min-width: 90px;
+  min-width: 110px;
+  /* Korean wraps between words, not inside them, so dense cells stay legible. */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 .prose tr:first-child > * {
   border-top: 0;

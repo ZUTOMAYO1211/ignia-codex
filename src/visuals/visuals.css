@@ -1267,3 +1267,204 @@
     animation: none;
   }
 }
+
+/* Race board: the modifiers line up into scannable columns, one row per race */
+.race-board {
+  padding: 24px 26px;
+  background: var(--glass);
+  border: 1px solid var(--glass-edge);
+  border-radius: 28px;
+  box-shadow: var(--glass-shine), var(--glass-drop);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+}
+.race-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.race-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--glass-soft);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+.race-group small {
+  padding: 1px 7px;
+  font-size: 11px;
+  background: var(--tint);
+  border-radius: 999px;
+}
+.race-group:hover {
+  border-color: var(--violet-text);
+}
+.race-group.is-on {
+  color: #fff;
+  background: var(--beam);
+  border-color: transparent;
+}
+.race-group.is-on small {
+  background: rgb(255 255 255 / 0.22);
+}
+.race-grid {
+  overflow-x: auto;
+  margin-top: 6px;
+}
+.race-head,
+.race-row {
+  display: grid;
+  grid-template-columns: 116px repeat(7, minmax(44px, 1fr));
+  align-items: center;
+  gap: 5px;
+  min-width: 440px;
+}
+.race-head {
+  padding: 12px 0 8px;
+}
+.race-head abbr {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  cursor: help;
+}
+.race-grid ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.race-row {
+  width: 100%;
+  padding: 5px 0;
+  background: none;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  text-align: left;
+}
+.race-name {
+  padding-left: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  word-break: keep-all;
+}
+.race-row:hover .race-name,
+.race-row.is-on .race-name {
+  color: var(--accent-text);
+}
+.race-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: var(--glass-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.race-cell.is-up {
+  color: #fff;
+  background: linear-gradient(180deg, rgb(91 124 255 / calc(0.34 + var(--w) * 0.3)), rgb(143 128 245 / calc(0.24 + var(--w) * 0.26)));
+  border-color: rgb(159 178 255 / 0.55);
+}
+.race-cell.is-down {
+  color: var(--muted);
+  background: none;
+  border-style: dashed;
+  border-color: var(--line-strong);
+}
+.race-row.is-on .race-cell {
+  border-color: var(--violet-text);
+}
+.race-detail {
+  margin-top: 20px;
+  padding: 18px 20px;
+  background: var(--glass-soft);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+}
+.race-detail h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 12px;
+  font-size: 19px;
+  color: var(--ink);
+}
+.race-detail h3 em {
+  padding: 3px 10px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--tint);
+  border-radius: 999px;
+}
+.race-detail dl {
+  margin: 0;
+}
+.race-detail div {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 14px;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+}
+.race-detail dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-text);
+}
+.race-detail dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text);
+  word-break: keep-all;
+}
+@media (max-width: 650px) {
+  .race-board {
+    padding: 18px 16px;
+    border-radius: 20px;
+  }
+  .race-detail div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+.race-free {
+  grid-column: 2 / -1;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--tint);
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
+  word-break: keep-all;
+}
+.race-name i {
+  margin-left: 5px;
+  font-size: 11px;
+  font-style: normal;
+  color: var(--violet-text);
+  cursor: help;
+}

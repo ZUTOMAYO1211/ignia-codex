@@ -209,6 +209,55 @@ export function getTurnRules(parts) {
   };
 }
 
+// The seven ability scores, in the order the character creation chapter lists them.
+export function getStatCodes(parts) {
+  const body = findSection(parts[3], /캐릭터 생성/)?.body ?? "";
+  return body
+    .split("\n")
+    .filter((line) => line.startsWith("|") && !/^\|\s*:?-/.test(line))
+    .slice(1)
+    .map((line) => line.split("|").slice(1, -1).map(cleanText))
+    .map(([name, code, effect]) => ({ name, code, effect }));
+}
+
+// Races, grouped by the heading they sit under. Each group's table carries the
+// modifiers, what the race is good for in play, and where it is usually found.
+export function getRaces(parts) {
+  const body = findSection(parts[0], /종족/)?.body ?? "";
+  return subsections(body).flatMap(({ heading, body: text }) => {
+    const group = cleanText(heading).replace(/\s*\(.+\)$/, "");
+    // The distribution table under a #### heading is not a list of races.
+    return text
+      .split(/^#### /m)[0]
+      .split("\n")
+      .filter((line) => line.startsWith("|") && !/^\|\s*:?-/.test(line))
+      .slice(1)
+      .map((line) => line.split("|").slice(1, -1).map(cleanText))
+      .map(([name, mods, perk, where]) => ({
+        group,
+        name,
+        perk,
+        where,
+        // Whatever is not a plain code and number stays as a written note, so
+        // "모든 능력치 +1" and free-assignment races keep their wording.
+        note: mods.replace(/[A-Z]{3}\s*[+-]\d/g, "").replace(/·/g, " ").replace(/\s+/g, " ").trim(),
+        mods: [...mods.matchAll(/([A-Z]{3})\s*([+-]\d)/g)].map((m) => [m[1], Number(m[2])]),
+      }));
+  });
+}
+
+// Where each region's races are listed, read back from the distribution table.
+export function getRaceRegions(parts) {
+  const body = findSection(parts[0], /종족/)?.body ?? "";
+  const table = body.split(/^#### /m)[1] ?? "";
+  return table
+    .split("\n")
+    .filter((line) => line.startsWith("|") && !/^\|\s*:?-/.test(line))
+    .slice(1)
+    .map((line) => line.split("|").slice(1, -1).map(cleanText))
+    .map(([region, common, rare, notable]) => ({ region, common, rare, notable }));
+}
+
 // Fun mode: one dial per row, each set from 0 to 4, with both ends of the range
 // spelled out. The presets under the table are ready-made sets of those values.
 export const FUN_STEPS = ["없음", "낮음", "보통", "높음", "매우 높음"];

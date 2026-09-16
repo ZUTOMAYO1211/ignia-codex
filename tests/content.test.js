@@ -14,6 +14,9 @@ import {
   getTurnRules,
   getFunModes,
   getFunPresets,
+  getRaces,
+  getRaceRegions,
+  getStatCodes,
   getCodexStats,
 } from "../src/content.js";
 const raw = readFileSync(
@@ -139,6 +142,25 @@ test("the unwalked continent lies across the sea rather than around it", () => {
   const beyond = parts[1].sections.find((s) => /대륙 외 지역/.test(s.title)).body;
   assert.match(beyond, /### 미답 대륙/);
   assert.match(beyond, /둘러싸고 있지는 않다/);
+});
+
+test("races carry modifiers, a play advantage, and where they are found", () => {
+  const races = getRaces(parts);
+  const codes = new Set(getStatCodes(parts).map((s) => s.code));
+  assert.equal(codes.size, 7);
+  assert.equal(races.length, 26);
+  assert.equal(new Set(races.map((r) => r.group)).size, 4);
+  assert.ok(races.every((r) => r.perk && r.where));
+  // Every modifier names a score the character sheet actually has.
+  for (const race of races)
+    for (const [code] of race.mods) assert.ok(codes.has(code), `${race.name} ${code}`);
+  // Humans take free points instead of fixed ones, so their note carries it.
+  const human = races.find((r) => r.name === "인간");
+  assert.equal(human.mods.length, 0);
+  assert.match(human.note, /자유 배분/);
+  // The regions table is read separately and never parsed as a race.
+  assert.ok(!races.some((r) => r.name.includes("왕국")));
+  assert.equal(getRaceRegions(parts).length, 15);
 });
 
 test("fun mode is a board of dials, each with both ends of its range", () => {

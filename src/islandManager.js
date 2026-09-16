@@ -20,6 +20,7 @@ const loaders = {
   turn: () => import("./visuals/TurnDemo.jsx"),
   fun: () => import("./visuals/FunModeGauge.jsx"),
   grades: () => import("./visuals/GradeLadder.jsx"),
+  races: () => import("./visuals/RaceBoard.jsx"),
 };
 const backgrounds = new Set(["waves", "galaxy", "topography", "threads", "particles", "acid", "glitch", "silk", "pillar"]);
 

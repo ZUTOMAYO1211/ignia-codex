@@ -765,9 +765,9 @@ main > .prose {
   background: var(--glass-strong);
   border-radius: 26px;
 }
-.reader-body > .prose > :not(.table-scroll):not(pre),
-.chapter > .prose > :not(.table-scroll):not(pre),
-main > .prose > :not(.table-scroll):not(pre) {
+.reader-body > .prose > :not(.table-scroll):not(.code-block),
+.chapter > .prose > :not(.table-scroll):not(.code-block),
+main > .prose > :not(.table-scroll):not(.code-block) {
   max-width: 46em;
 }
 .prose > :first-child {
@@ -886,6 +886,42 @@ main > .prose > :not(.table-scroll):not(pre) {
 .prose code {
   font-size: 0.88em;
   color: var(--violet-text);
+}
+/* Code blocks carry a copy button in their top corner; prompts wrap to the column. */
+.code-block {
+  position: relative;
+  margin: 24px 0;
+}
+.code-block pre {
+  margin: 0;
+  padding-top: 56px;
+}
+.prose pre:has(> code.language-prompt) {
+  white-space: pre-wrap;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.copy-code {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-height: 34px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--glass-soft);
+  border: 1px solid var(--glass-edge);
+  border-radius: 10px;
+  box-shadow: var(--glass-shine);
+}
+.copy-code:hover {
+  background: var(--tint);
+}
+.copy-code.is-done {
+  color: #fff;
+  background: var(--beam);
+  border-color: transparent;
 }
 .chapter {
   padding: 26px 0 8px;

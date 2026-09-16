@@ -448,6 +448,11 @@
   stroke-linecap: round;
   stroke-width: 2.5;
 }
+.nation-edge.is-exchange line {
+  stroke: #c9d4ff;
+  stroke-dasharray: 6 6;
+  stroke-width: 2;
+}
 .nation-arrowhead {
   fill: #5b7cff;
 }

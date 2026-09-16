@@ -394,6 +394,14 @@ function render() {
     table.replaceWith(wrap);
     wrap.append(table);
   });
+  // Drag selection is off site-wide, so every code block gets a copy button.
+  main.querySelectorAll(".prose pre").forEach((pre) => {
+    const wrap = document.createElement("div");
+    wrap.className = "code-block";
+    pre.replaceWith(wrap);
+    wrap.append(pre);
+    wrap.insertAdjacentHTML("beforeend", '<button type="button" class="copy-code" aria-live="polite">복사</button>');
+  });
   // Preserve the original markdown's internal table of contents in the SPA.
   main.querySelectorAll('a[href^="#제"]').forEach((a) => {
     const num = decodeURIComponent(a.getAttribute("href")).match(/제([1-4])부/);
@@ -412,6 +420,34 @@ function render() {
   closeMenu();
   window.scrollTo(0, 0);
 }
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.style.cssText = "position:fixed;opacity:0";
+    document.body.append(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    area.remove();
+    return ok;
+  }
+}
+main.addEventListener("click", async (e) => {
+  const button = e.target.closest(".copy-code");
+  if (!button) return;
+  const copied = await copyText(button.parentElement.querySelector("pre").textContent);
+  button.textContent = copied ? "복사됨" : "복사하지 못함";
+  button.classList.toggle("is-done", copied);
+  clearTimeout(button.resetTimer);
+  button.resetTimer = setTimeout(() => {
+    button.textContent = "복사";
+    button.classList.remove("is-done");
+  }, 1800);
+});
 
 const dialog = document.querySelector("#search-dialog");
 const input = document.querySelector("#search-input");

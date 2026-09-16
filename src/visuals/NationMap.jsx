@@ -136,14 +136,6 @@ export default function NationMap({ nations }) {
               </div>
             ))}
           </dl>
-          {current.candidates.length > 0 && (
-            <p className="nation-candidates">
-              <span>이름 후보</span>
-              {current.candidates.map((c) => (
-                <b key={c}>{c}</b>
-              ))}
-            </p>
-          )}
         </div>
       )}
     </div>

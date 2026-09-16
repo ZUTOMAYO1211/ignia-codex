@@ -112,7 +112,9 @@ const LetterGlitch = ({
   };
 
   const drawLetters = () => {
-    if (!context.current || letters.current.length === 0) return;
+    // A frame already queued when the scene unmounts still lands here, so the
+    // canvas is checked as well as the context.
+    if (!context.current || !canvasRef.current || letters.current.length === 0) return;
     const ctx = context.current;
     const { width, height } = canvasRef.current.getBoundingClientRect();
     ctx.clearRect(0, 0, width, height);

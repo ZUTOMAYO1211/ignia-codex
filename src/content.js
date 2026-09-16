@@ -68,6 +68,11 @@ const subsections = (body) => {
 // Magic disciplines, their mottos, and which ones split off from which.
 export function getMagicSystem(parts) {
   const body = findSection(parts[0], /마력 체계/)?.body ?? "";
+  // The chapter opens by naming its disciplines, so the other subsections it
+  // carries (resource costs and the like) stay out of the lineage diagram.
+  const named = (body.match(/능력에는 \*\*(.+?)\*\*/)?.[1] ?? "")
+    .split(/,\s*/)
+    .map((name) => name.replace(/\s*사용$/, "").trim());
   const disciplines = subsections(body).map(({ heading, body: text }) => {
     const m = heading.match(/^[\d-]+\.\s*(.+?)\s*\((.+?)\)(?:\s*—\s*"(.+)")?$/);
     const summary = text
@@ -80,7 +85,7 @@ export function getMagicSystem(parts) {
       motto: m?.[3] ?? "",
       summary: summary ? cleanText(summary) : "",
     };
-  });
+  }).filter((d) => named.includes(d.name));
   const lineage = [...body.matchAll(/^>\s*-\s*(\S+)\s*←\s*(\S+?)에서 분리/gm)].map(
     (m) => ({ child: m[1], parent: m[2] }),
   );
@@ -151,8 +156,6 @@ export function getNations(parts) {
         name: name.trim(),
         note: note.trim(),
         motto: cleanText(body.match(/^\*\*"(.+)"\*\*$/m)?.[1] ?? ""),
-        candidates:
-          body.match(/명칭 후보:\*\*\s*(.+)$/m)?.[1].split(" · ").map(cleanText) ?? [],
         fields,
       });
     }
@@ -201,19 +204,31 @@ export function getTurnRules(parts) {
   };
 }
 
-// Fun mode levels: each row names a level and how the GM's staging changes at it.
+// Fun mode: one dial per row, each set from 0 to 4, with both ends of the range
+// spelled out. The presets under the table are ready-made sets of those values.
+export const FUN_STEPS = ["없음", "낮음", "보통", "높음", "매우 높음"];
+export const FUN_DEFAULT = 2;
+
 export function getFunModes(parts) {
   const body = findSection(parts[3], /재미 모드/)?.body ?? "";
   const rows = body
     .split("\n")
     .filter((line) => line.startsWith("|") && !/^\|\s*:?-/.test(line))
     .map((line) => line.split("|").slice(1, -1).map((cell) => cleanText(cell)));
-  const [head = [], ...levels] = rows;
-  return levels.map(([name, ...cells]) => ({
-    name,
-    level: Number(name.match(/\d+/)?.[0]),
-    effects: cells.map((text, i) => ({ label: head[i + 1], text })),
-  }));
+  return rows.slice(1).map(([name, about, low, high]) => ({ name, about, low, high }));
+}
+
+export function getFunPresets(parts) {
+  const body = findSection(parts[3], /재미 모드/)?.body.split("### 7-2.")[1] ?? "";
+  return bullets(body).map((line) => {
+    const [name, spec = ""] = line.split(":");
+    const values = spec
+      .split("·")
+      .map((pair) => pair.trim().match(/^(.+?)\s+(\d)$/))
+      .filter(Boolean)
+      .map((m) => [m[1], Number(m[2])]);
+    return { name: name.trim(), values: Object.fromEntries(values) };
+  });
 }
 
 export function getCodexStats(parts) {
@@ -225,7 +240,7 @@ export function getCodexStats(parts) {
     nations: getNations(parts).length,
     terrains: getTerrains(parts).length,
     eras: getEras(parts).length,
-    funLevels: getFunModes(parts).length,
+    funDials: getFunModes(parts).length,
     ...(({ actions, options }) => ({ actions, options }))(getTurnRules(parts)),
   };
 }

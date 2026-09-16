@@ -16,6 +16,7 @@ import {
   getEras,
   getTurnRules,
   getFunModes,
+  getFunPresets,
   getCodexStats,
 } from "./content.js";
 import { mountIslands } from "./islandManager.js";
@@ -33,6 +34,7 @@ const codex = {
   eras: getEras(parts),
   turn: getTurnRules(parts),
   funModes: getFunModes(parts),
+  funPresets: getFunPresets(parts),
   stats: getCodexStats(parts),
 };
 const heroLede = "과거·현재·미래 세계의 모든 지식이 담긴 제 4의 도서관";
@@ -300,7 +302,7 @@ function islandProps(name) {
           { kind: "attributes", stats: [["기본 속성", stats.attributes], ["특수 속성", stats.special], ["종족군", stats.races]] },
           { kind: "nations", stats: [["세력", stats.nations], ["주요 지형", stats.terrains]] },
           { kind: "eras", stats: [["시대", stats.eras], ["현재 대륙력", 800, "년대"]] },
-          { kind: "turn", stats: [["턴당 행동", stats.actions], ["행동당 선택지", stats.options], ["재미 모드", stats.funLevels, "단계"]] },
+          { kind: "turn", stats: [["턴당 행동", stats.actions], ["행동당 선택지", stats.options], ["재미 모드 항목", stats.funDials]] },
         ].map((tile, i) => ({ ...tile, href: `#${parts[i].id}`, label: `제${i + 1}부`, title: shortTitles[i] })),
       };
     case "magic":
@@ -316,7 +318,7 @@ function islandProps(name) {
     case "turn":
       return { turn };
     case "fun":
-      return { modes: codex.funModes };
+      return { dials: codex.funModes, presets: codex.funPresets };
     default:
       return {};
   }

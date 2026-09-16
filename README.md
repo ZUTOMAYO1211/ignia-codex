@@ -68,7 +68,7 @@ GitHub Pages를 GitHub Actions 방식으로 설정한다. `main`에 푸시하면
 | 세력 관계도 | `src/visuals/NationMap.jsx` | 제2부 §3~5 | 직접 제작 · Topography 배경 |
 | 시대 연표 | `src/visuals/EraTimeline.jsx` | 제3부 연표 | 직접 제작 |
 | 한 턴 체험 | `src/visuals/TurnDemo.jsx` | 제4부 §2·§9 | Stepper |
-| 재미 모드 단계 | `src/visuals/FunModeGauge.jsx` | 제4부 §7 표 | 직접 제작 |
+| 재미 모드 항목 | `src/visuals/FunModeGauge.jsx` | 제4부 §7 표와 설정 예시 | 직접 제작 |
 
 세력 관계도의 점 위치와 관계의 의미(숙적·팽창 위협 등)는 `NationMap.jsx` 안에 정의되어 있으므로 제2부 §5를 크게 바꾸면 함께 고친다.
 

@@ -13,6 +13,7 @@ import {
   getEras,
   getTurnRules,
   getFunModes,
+  getFunPresets,
   getCodexStats,
 } from "../src/content.js";
 const raw = readFileSync(
@@ -35,10 +36,12 @@ test("the source stays authoritative for attribute diagrams", () => {
 });
 test("unfinished rules remain visible, including provisional judgments", () => {
   const pending = getPending(parts);
-  assert.ok(pending.some((p) => p.section.title.includes("행동 판정")));
-  assert.ok(pending.some((p) => p.section.title.includes("창세")));
-  assert.ok(pending.some((p) => p.lines.some((line) => line.includes("미정"))));
-  assert.ok(pending.some((p) => p.lines.some((line) => line.includes("판정 방식 확정"))));
+  assert.ok(pending.some((p) => p.section.title.includes("몬스터와 보스")));
+  assert.ok(pending.some((p) => p.section.title.includes("재미 모드")));
+  assert.ok(pending.some((p) => p.lines.some((line) => line.includes("초안"))));
+  assert.ok(pending.some((p) => p.lines.some((line) => line.includes("전투 세부 규칙"))));
+  // Genesis is deliberately open-ended now, so it is no longer an open task.
+  assert.doesNotMatch(parts[2].sections[0].title, /미정/);
 });
 test("magic disciplines keep their mottos and lineage", () => {
   const { disciplines, lineage } = getMagicSystem(parts);
@@ -72,8 +75,9 @@ test("nations, terrains, and equipment grades parse from their tables and sectio
   const nations = getNations(parts);
   assert.equal(nations.length, 12);
   assert.equal(nations[0].id, "3-1");
-  assert.equal(nations[0].candidates.length, 3);
   assert.ok(nations[0].fields["위치"].includes("서부"));
+  // Nation names are settled, so the source no longer carries name candidates.
+  assert.doesNotMatch(raw, /명칭 후보:\*\*/);
   assert.equal(nations.at(-1).id, "4-7");
   assert.equal(getTerrains(parts).length, 10);
   assert.deepEqual(getGrades(parts).map((g) => g.en), ["Common", "Rare", "Unique", "Legend", "Genesis"]);
@@ -97,24 +101,34 @@ test("turn rules come from the roleplay chapter and its worked example", () => {
   const stats = getCodexStats(parts);
   assert.equal(stats.nations, 12);
   assert.equal(stats.races, 5);
-  assert.equal(stats.funLevels, 5);
+  assert.equal(stats.funDials, 10);
 });
 test("revised worlds, races, classes, and Karnix government stay in the source", () => {
   assert.match(raw, /\*\*정령계:\*\*/);
   assert.match(raw, /\*\*외신 \(Outer God\):\*\*/);
   assert.match(raw, /\*\*마족 \(Demon\):\*\*/);
-  assert.match(raw, /\*\*보석술:\*\*/);
+  assert.match(raw, /\*\*보석 마술:\*\*/);
   assert.match(raw, /\*\*식물술:\*\*/);
-  assert.doesNotMatch(raw, /호빗|하프링|순찰자|보석 마법|식물 마법/);
+  assert.doesNotMatch(raw, /호빗|하프링|순찰자|보석술|보석 마법|식물 마법/);
   const karnix = getNations(parts).find((nation) => nation.id === "3-2");
   assert.match(karnix.fields["통치"], /4권 분립/);
   assert.equal(karnix.fields["선호 체계"], undefined);
   assert.match(karnix.fields["이념"], /모든 마력 체계를 차별 없이 수용/);
   assert.ok(getNations(parts).some((nation) => nation.id === "4-7" && /수인/.test(nation.name)));
 });
-test("fun mode lists five levels with the same staging effects on each", () => {
-  const modes = getFunModes(parts);
-  assert.deepEqual(modes.map((m) => m.level), [1, 2, 3, 4, 5]);
-  assert.deepEqual(modes[0].effects.map((e) => e.label), ["상황 변수", "선택지", "웃긴 상황·긴박한 상황"]);
-  assert.ok(modes.every((m) => m.effects.length === 3 && m.effects.every((e) => e.text)));
+test("fun mode is a board of dials, each with both ends of its range", () => {
+  const dials = getFunModes(parts);
+  assert.equal(dials.length, 10);
+  assert.equal(dials[0].name, "상황 변수");
+  assert.ok(dials.every((d) => d.about && d.low && d.high));
+  assert.equal(getCodexStats(parts).funDials, dials.length);
+});
+
+test("fun mode presets name dials that exist on the board", () => {
+  const names = new Set(getFunModes(parts).map((d) => d.name));
+  const presets = getFunPresets(parts);
+  assert.ok(presets.length >= 3);
+  assert.ok(presets.some((p) => Object.keys(p.values).length > 0));
+  for (const preset of presets)
+    for (const dial of Object.keys(preset.values)) assert.ok(names.has(dial), dial);
 });

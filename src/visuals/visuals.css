@@ -594,25 +594,6 @@
   line-height: 1.75;
   color: rgb(241 238 255 / 0.9);
 }
-.nation-candidates {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
-  font-size: 12px;
-}
-.nation-candidates span {
-  margin-right: 4px;
-  color: rgb(229 224 255 / 0.55);
-}
-.nation-candidates b {
-  padding: 3px 10px;
-  font-weight: 500;
-  background: rgb(229 224 255 / 0.1);
-  border: 1px solid rgb(229 224 255 / 0.18);
-  border-radius: 99px;
-}
 
 /* Era timeline */
 .era-timeline {
@@ -1011,99 +992,155 @@
   color: var(--ink);
 }
 
-/* Fun mode gauge: signal bars that fill to the chosen level */
-.fun-gauge {
-  padding: 28px 32px;
+/* Fun mode board: one dial per setting, each set on its own from 0 to 4 */
+.fun-board {
+  padding: 26px 30px;
   background: var(--glass);
   border: 1px solid var(--glass-edge);
   border-radius: 28px;
-  box-shadow:
-    var(--glass-shine),
-    var(--glass-drop),
-    0 0 calc(var(--fun) * 80px) calc(var(--fun) * -10px) rgb(91 124 255 / calc(var(--fun) * 0.5));
+  box-shadow: var(--glass-shine), var(--glass-drop);
   -webkit-backdrop-filter: var(--blur);
   backdrop-filter: var(--blur);
-  transition: box-shadow 0.4s;
 }
-.fun-head {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: end;
-  gap: 40px;
-}
-.fun-level {
-  margin: 0;
-  font-size: clamp(40px, 4.6vw, 60px);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.05em;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-.fun-level small {
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--muted);
-}
-.fun-steps {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-items: end;
-  gap: 8px;
-}
-.fun-step {
+.fun-presets {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
-  padding: 0;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.fun-presets > span {
+  margin-right: 4px;
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
-  background: none;
 }
-.fun-cell {
-  display: block;
-  height: calc(8px + var(--i) * 6px);
-  background: var(--glass-soft);
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
-  box-shadow: var(--glass-shine);
-  transition: background-color 0.25s, box-shadow 0.25s;
-}
-.fun-step:hover .fun-cell {
-  border-color: var(--violet-text);
-}
-.fun-step.is-on .fun-cell {
-  background: var(--beam);
-  border-color: rgb(255 255 255 / 0.35);
-}
-.fun-step.is-selected .fun-cell {
-  box-shadow: 0 0 0 3px var(--glass-solid), 0 0 0 5px var(--violet-text), 0 10px 24px -8px rgb(79 123 255 / 0.9);
-}
-.fun-step.is-selected {
-  color: var(--ink);
-}
-.fun-effects {
-  margin: 26px 0 0;
-}
-.fun-effects div {
-  display: grid;
-  grid-template-columns: 180px minmax(0, 1fr);
-  gap: 16px;
-  padding: 14px 0;
-  border-top: 1px solid var(--line);
-}
-.fun-effects dt {
+.fun-presets button {
+  padding: 7px 14px;
   font-size: 13px;
   font-weight: 600;
   color: var(--accent-text);
+  background: var(--glass-soft);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
 }
-.fun-effects dd {
+.fun-presets button:hover {
+  color: #fff;
+  background: var(--beam);
+  border-color: transparent;
+}
+.fun-dials {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fun-dial {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 0.9fr);
+  align-items: center;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.fun-dial-name {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
   margin: 0;
   font-size: 15px;
-  line-height: 1.75;
-  color: var(--text);
+  font-weight: 600;
+  color: var(--ink);
+}
+.fun-dial-name small {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.fun-track {
+  display: grid;
+  grid-template-columns: repeat(5, 34px);
+  gap: 5px;
+}
+.fun-notch {
+  padding: 0;
+  height: 30px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--glass-soft);
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  box-shadow: var(--glass-shine);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+.fun-notch:hover {
+  border-color: var(--violet-text);
+}
+.fun-notch.is-on {
+  color: #fff;
+  background: var(--beam);
+  border-color: rgb(255 255 255 / 0.28);
+}
+.fun-notch.is-selected {
+  box-shadow: 0 0 0 2px var(--glass-solid), 0 0 0 4px var(--violet-text);
+}
+.fun-dial-read {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.fun-dial-read b {
+  font-size: 14px;
+  color: var(--accent-text);
+}
+.fun-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+.fun-summary p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0;
+  min-width: 0;
+}
+.fun-summary span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.fun-summary b {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.fun-copy {
+  flex: none;
+  margin-left: auto;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--glass-soft);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+.fun-copy:hover,
+.fun-copy.is-done {
+  color: #fff;
+  background: var(--beam);
+  border-color: transparent;
 }
 
 @media (max-width: 960px) {
@@ -1193,21 +1230,35 @@
     font-size: 12px;
   }
 }
+@media (max-width: 860px) {
+  .fun-dial {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .fun-dial-read {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+  }
+}
 @media (max-width: 650px) {
-  .fun-gauge {
-    padding: 20px 18px;
+  .fun-board {
+    padding: 18px 16px;
     border-radius: 20px;
   }
-  .fun-head {
+  .fun-dial {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 10px;
   }
-  .fun-step {
-    font-size: 11px;
+  .fun-track {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
-  .fun-effects div {
-    grid-template-columns: 1fr;
-    gap: 2px;
+  .fun-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .fun-copy {
+    margin-left: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {

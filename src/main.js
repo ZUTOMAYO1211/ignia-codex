@@ -138,23 +138,24 @@ function home() {
   return `<section class="hero">${island("waves", "hero-waves")}<div class="hero-content"><p class="hero-badge"><span>집필 중</span>현재 시점 대륙력 800년대</p><div class="hero-title" data-island="heroTitle"><h1>이그니아 코덱스</h1><p class="hero-lede">${heroLede}</p></div><div class="hero-actions"><a class="btn btn-light" href="${sectionHref(0, /세계 구조/)}">처음부터 읽기</a><a class="btn btn-glass" href="#pending">미정 항목 보기</a></div></div></section>
   <div class="home-body">
     <div class="home-lead">
-      <section class="stage-card"><div class="stage-art" role="img" aria-label="천계·정령계·물질계·마계를 표현한 이그니아 콘셉트 아트"></div><small class="stage-note">콘셉트 아트라 실제 지형과 다를 수 있음</small><div class="stage-copy"><p class="glass-badge"><span>현재 무대</span>대륙력 800년대</p><h2>이그나르 대륙</h2><p class="stage-lede">왕국과 제국은 국경에서 대치 중이고 마계 접경의 게이트는 점점 불안정해진다</p><a class="btn btn-light" href="#part-2">지리와 국가 보기</a></div></section>
+      <section class="stage-card"><div class="stage-art" role="img" aria-label="천계·물질계·마계와 정령계를 표현한 이그니아 콘셉트 아트"></div><small class="stage-note">콘셉트 아트라 실제 지형과 다를 수 있음</small><div class="stage-copy"><p class="glass-badge"><span>현재 무대</span>대륙력 800년대</p><h2>이그나르 대륙</h2><p class="stage-lede">왕국과 제국은 국경에서 대치 중이고 마계 접경의 게이트는 점점 불안정해진다</p><a class="btn btn-light" href="#part-2">지리와 국가 보기</a></div></section>
       <section class="part-tiles-wrap" aria-label="목차"><div data-island="partTiles">${codexIndex()}</div></section>
     </div>
-    <section class="void-panel">${island("galaxy", "panel-bg")}<div class="void-copy"><h2>천계·정령계<br>물질계·마계</h2><p>이그니아는 여러 세계가 층층이 포개진 다집합 구축형 세계다<br>네 세계의 사이와 바깥을 외곽세계가 감싸며, 그 너머에는 외신이 존재한다</p><a class="btn btn-glass" href="${sectionHref(0, /세계 구조/)}">세계 간 이동 읽기</a></div>${strataDiagram()}</section>
+    <section class="void-panel">${island("galaxy", "panel-bg")}<div class="void-copy"><h2>천계·물질계<br>마계·정령계</h2><p>이그니아는 천계와 물질계와 마계가 층층이 포개진 다집합 구축형 세계다<br>정령계는 층이 아니라 물질계에 덧대어진 주머니이고, 세 세계의 사이와 바깥은 허무 에너지로 가득한 외곽세계가 감싼다</p><a class="btn btn-glass" href="${sectionHref(0, /세계 구조/)}">세계 간 이동 읽기</a></div>${strataDiagram()}</section>
     <section class="home-section">${sectionHead(`마력을 다루는 ${magic.disciplines.length}가지 방법`, `${lineage} 갈라져 나왔다`, sectionHref(0, /마력 체계/), "마력 체계 읽기")}${island("magic")}</section>
     <section class="home-section">${sectionHead(`기본 속성 ${stats.attributes}종과 상위 마법`, "속성을 누르면 진화한 마법과 융합 조합이 보인다", sectionHref(0, /속성/), "속성 전체 읽기")}<div data-island="attributes">${elementsDiagram()}</div></section>
     ${nationsPanel(true)}
     <section class="home-section">${sectionHead(`${eras.length}개의 시대`, "막대를 누르면 그 시대의 사건이 보인다<br>겹친 막대는 같은 시기를 함께 지난 시대다", sectionHref(2, /연표/), "연표 읽기")}${island("eras")}</section>
     <section class="home-section">${sectionHead(`한 턴은 행동 ${turn.actions}번`, "원문의 진행 예시로 한 턴을 차례대로 넘겨 본다", sectionHref(3, /턴 구조/), "턴 구조 읽기")}${island("turn")}</section>
-    <section class="pending-strip"><div><h2>아직 정하지 않은 것들</h2><p>국가 정식 명칭·창세 가설·주사위 판정 여부처럼 원문에 🚧로 남겨 둔 항목</p></div><a class="btn btn-solid" href="#pending">미정 항목 ${pending.length}개 보기</a></section>
+    <section class="pending-strip"><div><h2>아직 정하지 않은 것들</h2><p>진-최종 보스·고정 게이트 위치·전투 세부 규칙처럼 원문에 🚧로 남겨 둔 항목</p></div><a class="btn btn-solid" href="#pending">미정 항목 ${pending.length}개 보기</a></section>
   </div>`;
 }
 
-// Mirrors the source document's diagram, where a band of the void separates each world.
+// Mirrors the source document's diagram: the void separates the three stacked
+// worlds, and the spirit realm hangs off the material one as a pocket instead.
 function strataDiagram() {
   const gap = '<span class="strata-gap">외곽세계</span>';
-  return `<div class="strata-wrap"><div class="strata" role="img" aria-label="외곽세계를 사이에 두고 천계·정령계·물질계·마계가 차례로 놓인 계층 구조">${gap}<div class="stratum celestial"><strong>천계</strong><small>Celestial Realm</small></div>${gap}<div class="stratum spirit"><strong>정령계</strong><small>Spirit Realm</small></div>${gap}<div class="stratum material"><strong>물질계</strong><em>중심 세계</em><small>Material Realm</small></div>${gap}<div class="stratum abyss"><strong>마계</strong><small>Demon Realm</small></div>${gap}</div><p class="strata-note">외곽세계에는 내부 법칙에 속하지 않는 외신이 존재한다</p></div>`;
+  return `<div class="strata-wrap"><div class="strata" role="img" aria-label="외곽세계를 사이에 두고 천계·물질계·마계가 차례로 놓이고, 정령계는 물질계에 주머니처럼 덧붙은 구조">${gap}<div class="stratum celestial"><strong>천계</strong><small>Celestial Realm</small></div>${gap}<div class="stratum-pair"><div class="stratum material"><strong>물질계</strong><em>중심 세계</em><small>Material Realm</small></div><div class="stratum pocket"><strong>정령계</strong><small>주머니</small></div></div>${gap}<div class="stratum abyss"><strong>마계</strong><small>Demon Realm</small></div>${gap}</div><p class="strata-note">정령계는 층이 아니라 물질계에 덧대어진 주머니다<br>외곽세계는 허무 에너지로 가득하며 그곳에 외신이 존재한다</p></div>`;
 }
 
 // Each chapter that has a picture in the codex gets its island above the prose.
@@ -185,7 +186,7 @@ function article(part, section) {
 }
 
 function pendingPage() {
-  return `<div class="reading-header"><span class="section-kicker">작업 중</span><h1>미정 항목</h1><p>원문에 🚧나 ‘미정’으로 남겨 둔 줄을 모았다<br>원문에서 정리하면 이 목록에서도 빠진다</p></div><div class="pending-list">${pending.map(({ part, section, lines }) => `<article><div class="pending-meta"><span>${escape(part.title)}</span><span class="draft-pill">검토 중</span></div><h2><a href="${articleLink(part.id, section.id)}">${escape(section.title)} ↗</a></h2><div class="prose">${md(lines.join("\n\n"))}</div></article>`).join("")}</div><div class="info-panel"><h2>국가명은 모두 가칭</h2><p>나라마다 이름 후보를 여럿 두었고 정하기 전까지는 첫 번째 후보로 적는다</p><a class="text-link" href="#part-2">명칭 후보 보기 ↗</a></div>`;
+  return `<div class="reading-header"><span class="section-kicker">작업 중</span><h1>미정 항목</h1><p>원문에 🚧나 ‘미정’으로 남겨 둔 줄을 모았다<br>원문에서 정리하면 이 목록에서도 빠진다</p></div><div class="pending-list">${pending.map(({ part, section, lines }) => `<article><div class="pending-meta"><span>${escape(part.title)}</span><span class="draft-pill">검토 중</span></div><h2><a href="${articleLink(part.id, section.id)}">${escape(section.title)} ↗</a></h2><div class="prose">${md(lines.join("\n\n"))}</div></article>`).join("")}</div><div class="info-panel"><h2>일부러 비워 둔 것들</h2><p>직업·장비·스킬·칭호·외신·세계로 들어가는 방법은 미정이 아니라 GM이 플레이 도중 정하도록 열어 둔 자리다</p><a class="text-link" href="${sectionHref(0, /추가 설정/)}">GM 재량 항목 보기 ↗</a></div>`;
 }
 
 // Galaxy stars glow violet or cobalt around a pale lilac core, never pure white.

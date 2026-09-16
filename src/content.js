@@ -31,8 +31,13 @@ export function getPending(parts) {
     part.sections.flatMap((section) => {
       const lines = section.body
         .split("\n")
-        .filter((line) => /🚧|미정|확정 전|추후 결정|^[-] .*확정/.test(line) ||
-          (/작업 예정|추가 설정/.test(section.title) && /^- /.test(line)))
+        // 미정복 is a frontier, not an open question, and a line saying something
+        // will never be settled is a decision rather than a gap.
+        .filter((line) => /🚧|미정(?!복)|확정 전|추후 결정/.test(line) ||
+          (/작업 예정/.test(section.title) && /^- /.test(line)))
+        // Lines are shown out of context, so a nested bullet loses its indent
+        // rather than rendering as an indented code block.
+        .map((line) => line.replace(/^\s+/, ""))
         .map((line) => line.startsWith('|') ? '- ' + line.split('|').slice(1, -1).map(cell => cell.trim()).join(' + ').replace(/ \+ (🚧)/, ' → $1') : line);
       return lines.length ? [{ part, section, lines }] : [];
     }),

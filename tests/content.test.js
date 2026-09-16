@@ -116,6 +116,31 @@ test("revised worlds, races, classes, and Karnix government stay in the source",
   assert.match(karnix.fields["이념"], /모든 마력 체계를 차별 없이 수용/);
   assert.ok(getNations(parts).some((nation) => nation.id === "4-7" && /수인/.test(nation.name)));
 });
+test("the spirit realm sits outside the stack and the void carries its energy", () => {
+  const world = parts[0].sections[0].body;
+  assert.match(world, /적층 구조에 속하는 세계는 \*\*천계·물질계·마계\*\* 셋/);
+  assert.match(world, /### 정령계 — 층이 아닌 주머니/);
+  assert.match(world, /### 허무 에너지/);
+  // The stack diagram no longer lists the spirit realm as a band of its own.
+  const diagram = world.match(/```\n([\s\S]*?)```/)[1];
+  assert.doesNotMatch(diagram.replace(/\[정령계\]/, ""), /정령계/);
+  assert.equal(diagram.match(/외곽세계/g).length, 4);
+});
+
+test("wrath's domain is a colosseum nobody walks out of", () => {
+  const sins = parts[1].sections.find((s) => /죄악의 영역/.test(s.title)).body;
+  const wrath = sins.split("\n").find((l) => l.startsWith("| **분노**"));
+  assert.match(wrath, /투계장 그란베르/);
+  assert.match(wrath, /우승하거나 죽어야/);
+  assert.doesNotMatch(sins, /불타는 협곡/);
+});
+
+test("the unwalked continent lies across the sea rather than around it", () => {
+  const beyond = parts[1].sections.find((s) => /대륙 외 지역/.test(s.title)).body;
+  assert.match(beyond, /### 미답 대륙/);
+  assert.match(beyond, /둘러싸고 있지는 않다/);
+});
+
 test("fun mode is a board of dials, each with both ends of its range", () => {
   const dials = getFunModes(parts);
   assert.equal(dials.length, 10);
